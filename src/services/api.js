@@ -1,4 +1,8 @@
-﻿const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3333/api/v1';
+const API_URL = import.meta.env.VITE_API_URL;
+
+if (!API_URL) {
+  throw new Error('VITE_API_URL deve ser definido no arquivo .env');
+}
 
 async function request(path, options = {}) {
   const response = await fetch(`${API_URL}${path}`, {
