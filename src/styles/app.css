@@ -352,8 +352,23 @@ th {
   justify-content: flex-end;
 }
 
-.auth-alert {
+.auth-banner {
   margin: 0;
+  padding: 14px 16px;
+  border-radius: 16px;
+  border: 1px solid transparent;
+}
+
+.auth-banner--info {
+  background: rgba(14, 165, 233, 0.12);
+  border-color: rgba(14, 165, 233, 0.28);
+  color: #bae6fd;
+}
+
+.auth-banner--error {
+  background: rgba(249, 115, 22, 0.12);
+  border-color: rgba(249, 115, 22, 0.28);
+  color: #fdba74;
 }
 
 .topbar__actions {

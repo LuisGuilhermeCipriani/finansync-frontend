@@ -85,11 +85,13 @@ function sumDashboardData(transactions, accounts, categories) {
 function App() {
   const hasApi = Boolean(import.meta.env.VITE_API_URL);
   const [sessionMode, setSessionMode] = React.useState(hasApi ? 'auth' : 'demo');
+  const [authStatus, setAuthStatus] = React.useState(hasApi ? 'signedOut' : 'demo');
   const [authView, setAuthView] = React.useState('login');
   const [authUser, setAuthUser] = React.useState(null);
   const [authLoading, setAuthLoading] = React.useState(hasApi);
   const [authSubmitting, setAuthSubmitting] = React.useState(false);
   const [authError, setAuthError] = React.useState('');
+  const [authNotice, setAuthNotice] = React.useState('');
   const [authForm, setAuthForm] = React.useState(emptyAuthForm);
   const [activeTab, setActiveTab] = React.useState('dashboard');
   const [loading, setLoading] = React.useState(true);
@@ -134,15 +136,17 @@ function App() {
 
   const resetAuthState = React.useCallback(() => {
     setAuthUser(null);
+    setAuthStatus(hasApi ? 'signedOut' : 'demo');
     setAuthView('login');
     setAuthForm(emptyAuthForm);
     setAuthLoading(false);
     setAuthSubmitting(false);
     setAuthError('');
+    setAuthNotice('');
     setError('');
     resetWorkspaceData();
     setLoading(false);
-  }, [resetWorkspaceData]);
+  }, [hasApi, resetWorkspaceData]);
 
   React.useEffect(() => {
     const bootstrapSession = async () => {
@@ -168,6 +172,7 @@ function App() {
         const response = await getMe();
         setAuthUser(response.data);
         setSessionMode('auth');
+        setAuthStatus('authenticated');
         resetWorkspaceData();
 
         try {
@@ -179,7 +184,7 @@ function App() {
         localStorage.removeItem(STORAGE_KEY);
         clearAuthToken();
         resetAuthState();
-        setAuthError('Sua sessao expirou. Entre novamente.');
+        setAuthNotice('Sua sessao expirou por seguranca. Entre novamente para continuar.');
       } finally {
         setAuthLoading(false);
         setLoading(false);
@@ -197,6 +202,7 @@ function App() {
   const handleAuthSubmit = async (event) => {
     event.preventDefault();
     setAuthError('');
+    setAuthNotice('');
 
     const trimmedName = authForm.name.trim();
     const trimmedEmail = authForm.email.trim();
@@ -231,6 +237,7 @@ function App() {
       setAuthToken(token);
       setAuthUser(user);
       setSessionMode('auth');
+      setAuthStatus('authenticated');
       setLoading(true);
       resetWorkspaceData();
       try {
@@ -250,10 +257,12 @@ function App() {
     localStorage.removeItem(STORAGE_KEY);
     clearAuthToken();
     setSessionMode('demo');
+    setAuthStatus('demo');
     setAuthUser(null);
     setAuthView('login');
     setAuthForm(emptyAuthForm);
     setAuthError('');
+    setAuthNotice('Voce entrou em modo demonstracao. Os dados desta tela nao alteram sua conta real.');
     loadDemoData();
     setLoading(false);
   };
@@ -263,10 +272,12 @@ function App() {
     clearAuthToken();
     setAuthUser(null);
     setSessionMode('auth');
+    setAuthStatus('signedOut');
     setAuthView('login');
     setAuthForm(emptyAuthForm);
     setActiveTab('dashboard');
     resetWorkspaceData();
+    setAuthNotice('Voce saiu com seguranca. Quando quiser, entre novamente.');
     setLoading(false);
   };
 
@@ -549,7 +560,7 @@ function App() {
     return <div className="loading loading--full">Carregando sessao...</div>;
   }
 
-  if (sessionMode === 'auth' && !authUser) {
+  if (sessionMode === 'auth' && authStatus !== 'authenticated') {
     return (
       <AuthCard
         mode={authView}
@@ -560,6 +571,7 @@ function App() {
         onDemoMode={handleUseDemo}
         loading={authSubmitting}
         error={authError}
+        notice={authNotice}
       />
     );
   }
@@ -575,7 +587,13 @@ function App() {
           loading={refreshing}
           user={authUser}
           onLogout={sessionMode === 'demo' ? null : handleLogout}
-          modeLabel={sessionMode === 'demo' ? 'Modo demonstracao' : 'Sessao autenticada'}
+          modeLabel={
+            sessionMode === 'demo'
+              ? 'Modo demonstracao'
+              : authStatus === 'authenticated'
+                ? 'Sessao autenticada'
+                : 'Acesso encerrado'
+          }
         />
 
         {error ? <div className="alert">{error}</div> : null}

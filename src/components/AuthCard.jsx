@@ -1,6 +1,16 @@
 import React from 'react';
 
-export default function AuthCard({ mode, values, onChange, onSubmit, onToggleMode, onDemoMode, loading, error }) {
+export default function AuthCard({
+  mode,
+  values,
+  onChange,
+  onSubmit,
+  onToggleMode,
+  onDemoMode,
+  loading,
+  error,
+  notice
+}) {
   const isRegister = mode === 'register';
 
   return (
@@ -60,7 +70,8 @@ export default function AuthCard({ mode, values, onChange, onSubmit, onToggleMod
             />
           </label>
 
-          {error ? <div className="alert auth-alert">{error}</div> : null}
+          {notice ? <div className="auth-banner auth-banner--info">{notice}</div> : null}
+          {error ? <div className="auth-banner auth-banner--error">{error}</div> : null}
 
           <button type="submit" className="button" disabled={loading}>
             {loading ? 'Processando...' : isRegister ? 'Criar conta' : 'Entrar'}
