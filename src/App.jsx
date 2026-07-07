@@ -118,6 +118,8 @@ function App() {
 
   const resetAuthState = React.useCallback(() => {
     setAuthUser(null);
+    setAuthView('login');
+    setAuthForm(emptyAuthForm);
     setAuthLoading(false);
     setAuthSubmitting(false);
     setAuthError('');
@@ -207,6 +209,8 @@ function App() {
     clearAuthToken();
     setSessionMode('demo');
     setAuthUser(null);
+    setAuthView('login');
+    setAuthForm(emptyAuthForm);
     setAuthError('');
     loadDemoData();
     setLoading(false);
@@ -217,6 +221,7 @@ function App() {
     clearAuthToken();
     setAuthUser(null);
     setSessionMode('auth');
+    setAuthView('login');
     setAuthForm(emptyAuthForm);
     setActiveTab('dashboard');
     loadDemoData();
