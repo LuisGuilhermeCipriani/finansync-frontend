@@ -12,6 +12,11 @@ export default function AuthCard({
   notice
 }) {
   const isRegister = mode === 'register';
+  const [showPassword, setShowPassword] = React.useState(false);
+
+  React.useEffect(() => {
+    setShowPassword(false);
+  }, [mode]);
 
   return (
     <section className="auth-shell">
@@ -68,15 +73,27 @@ export default function AuthCard({
 
           <label>
             <span>Senha</span>
-            <input
-              name="password"
-              type="password"
-              autoComplete={isRegister ? 'new-password' : 'current-password'}
-              value={values.password}
-              onChange={onChange}
-              placeholder="Sua senha"
-              required
-            />
+            <div className="auth-password">
+              <input
+                name="password"
+                type={showPassword ? 'text' : 'password'}
+                autoComplete={isRegister ? 'new-password' : 'current-password'}
+                value={values.password}
+                onChange={onChange}
+                placeholder="Sua senha"
+                required
+              />
+              <button
+                type="button"
+                className="auth-password__toggle"
+                onClick={() => setShowPassword((current) => !current)}
+                aria-pressed={showPassword}
+                aria-label={showPassword ? 'Ocultar senha' : 'Mostrar senha'}
+              >
+                {showPassword ? 'Ocultar' : 'Mostrar'}
+              </button>
+            </div>
+            <small className="auth-hint">Mantenha a senha em sigilo ao usar computadores compartilhados.</small>
           </label>
 
           {notice ? <div className="auth-banner auth-banner--info">{notice}</div> : null}
