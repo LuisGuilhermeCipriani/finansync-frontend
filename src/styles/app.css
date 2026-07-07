@@ -276,6 +276,26 @@
   line-height: 1.45;
 }
 
+.section-card__action {
+  align-self: start;
+  justify-self: end;
+}
+
+.section-card__chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  padding: 0 12px;
+  border-radius: 999px;
+  background: rgba(56, 189, 248, 0.12);
+  border: 1px solid rgba(56, 189, 248, 0.2);
+  color: #d8f3ff;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
 .table-wrap {
   overflow: auto;
   border-radius: 18px;
@@ -391,6 +411,10 @@ tbody tr:hover td {
 
   .section-card__header {
     flex-direction: column;
+  }
+
+  .section-card__action {
+    justify-self: start;
   }
 
   .quick-form,

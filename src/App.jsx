@@ -520,11 +520,19 @@ function App() {
         </div>
 
         <div className="two-columns">
-          <SectionCard title="Lancamentos recentes" description="Visao rapida das ultimas movimentacoes.">
+          <SectionCard
+            title="Lancamentos recentes"
+            description="Visao rapida das ultimas movimentacoes."
+            action={<span className="section-card__chip">Ultimos 5</span>}
+          >
             <DataTable columns={columns.transactions} rows={dashboard.recentTransactions || []} />
           </SectionCard>
 
-          <SectionCard title="Contas em destaque" description="Saldos principais do usuario.">
+          <SectionCard
+            title="Contas em destaque"
+            description="Saldos principais do usuario."
+            action={<span className="section-card__chip">Top 3</span>}
+          >
             <DataTable columns={columns.accounts} rows={accounts.slice(0, 3)} />
           </SectionCard>
         </div>
@@ -532,7 +540,11 @@ function App() {
     ),
     contas: (
       <div className="workspace-grid">
-        <SectionCard title="Contas cadastradas" description="Lista das contas ativas no sistema.">
+        <SectionCard
+          title="Contas cadastradas"
+          description="Lista das contas ativas no sistema."
+          action={<span className="section-card__chip">Base atual</span>}
+        >
           <DataTable columns={columns.accounts} rows={accounts} />
         </SectionCard>
         {forms.contas}
@@ -540,7 +552,11 @@ function App() {
     ),
     categorias: (
       <div className="workspace-grid">
-        <SectionCard title="Categorias cadastradas" description="Classifique receitas e despesas sem complicacao.">
+        <SectionCard
+          title="Categorias cadastradas"
+          description="Classifique receitas e despesas sem complicacao."
+          action={<span className="section-card__chip">Organizacao</span>}
+        >
           <DataTable columns={columns.categories} rows={categories} />
         </SectionCard>
         {forms.categorias}
@@ -548,7 +564,11 @@ function App() {
     ),
     lancamentos: (
       <div className="workspace-grid">
-        <SectionCard title="Movimentacoes" description="Controle o fluxo de caixa em uma tela unica.">
+        <SectionCard
+          title="Movimentacoes"
+          description="Controle o fluxo de caixa em uma tela unica."
+          action={<span className="section-card__chip">Fluxo completo</span>}
+        >
           <DataTable columns={columns.transactions} rows={transactions} />
         </SectionCard>
         {forms.lancamentos}

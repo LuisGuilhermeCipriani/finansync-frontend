@@ -8,7 +8,7 @@ export default function SectionCard({ title, description, children, action }) {
           <h2>{title}</h2>
           {description ? <p>{description}</p> : null}
         </div>
-        {action}
+        {action ? <div className="section-card__action">{action}</div> : null}
       </div>
       {children}
     </section>
