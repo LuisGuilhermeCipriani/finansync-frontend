@@ -1,13 +1,23 @@
 const API_URL = import.meta.env.VITE_API_URL;
+let authToken = localStorage.getItem('finansync_token') || '';
 
 if (!API_URL) {
   throw new Error('VITE_API_URL deve ser definido no arquivo .env');
+}
+
+export function setAuthToken(token) {
+  authToken = token || '';
+}
+
+export function clearAuthToken() {
+  authToken = '';
 }
 
 async function request(path, options = {}) {
   const response = await fetch(`${API_URL}${path}`, {
     headers: {
       'Content-Type': 'application/json',
+      ...(authToken ? { Authorization: `Bearer ${authToken}` } : {}),
       ...(options.headers || {})
     },
     ...options
@@ -61,4 +71,22 @@ export async function createTransaction(payload) {
     method: 'POST',
     body: JSON.stringify(payload)
   });
+}
+
+export async function register(payload) {
+  return request('/auth/register', {
+    method: 'POST',
+    body: JSON.stringify(payload)
+  });
+}
+
+export async function login(payload) {
+  return request('/auth/login', {
+    method: 'POST',
+    body: JSON.stringify(payload)
+  });
+}
+
+export async function getMe() {
+  return request('/auth/me');
 }

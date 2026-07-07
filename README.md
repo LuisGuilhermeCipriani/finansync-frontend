@@ -29,4 +29,4 @@ Copie `.env.example` para `.env` e ajuste os valores.
 
 ## Observação
 
-O frontend pode rodar com dados de demonstração quando a API não estiver disponível, mas usa `VITE_API_URL` quando o backend estiver ativo.
+O frontend pode rodar em modo demonstracao quando a API não estiver disponível, ou autenticar com a API para acessar os dados do usuário.

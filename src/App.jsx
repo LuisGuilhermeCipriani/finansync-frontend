@@ -1,13 +1,29 @@
-﻿import React from 'react';
+import React from 'react';
+import AuthCard from './components/AuthCard';
 import Sidebar from './components/Sidebar';
 import Topbar from './components/Topbar';
 import MetricCard from './components/MetricCard';
 import SectionCard from './components/SectionCard';
 import DataTable from './components/DataTable';
 import QuickForm from './components/QuickForm';
-import { getDashboard, getAccounts, getCategories, getTransactions, createAccount, createCategory, createTransaction } from './services/api';
+import {
+  getDashboard,
+  getAccounts,
+  getCategories,
+  getTransactions,
+  createAccount,
+  createCategory,
+  createTransaction,
+  login as loginUser,
+  register as registerUser,
+  getMe,
+  setAuthToken,
+  clearAuthToken
+} from './services/api';
 import { mockAccounts, mockCategories, mockDashboard, mockTransactions } from './services/mockData';
 import './styles/app.css';
+
+const STORAGE_KEY = 'finansync_token';
 
 const TAB_TITLES = {
   dashboard: 'Painel executivo',
@@ -15,8 +31,6 @@ const TAB_TITLES = {
   categorias: 'Categorias financeiras',
   lancamentos: 'Lancamentos e fluxo'
 };
-
-const useApi = Boolean(import.meta.env.VITE_API_URL);
 
 const emptyForm = {
   accountName: '',
@@ -31,6 +45,12 @@ const emptyForm = {
   transactionType: 'expense',
   transactionAccountId: '1',
   transactionCategoryId: '2'
+};
+
+const emptyAuthForm = {
+  name: '',
+  email: '',
+  password: ''
 };
 
 function sumDashboardData(transactions, accounts, categories) {
@@ -54,6 +74,14 @@ function sumDashboardData(transactions, accounts, categories) {
 }
 
 function App() {
+  const hasApi = Boolean(import.meta.env.VITE_API_URL);
+  const [sessionMode, setSessionMode] = React.useState(hasApi ? 'auth' : 'demo');
+  const [authView, setAuthView] = React.useState('login');
+  const [authUser, setAuthUser] = React.useState(null);
+  const [authLoading, setAuthLoading] = React.useState(hasApi);
+  const [authSubmitting, setAuthSubmitting] = React.useState(false);
+  const [authError, setAuthError] = React.useState('');
+  const [authForm, setAuthForm] = React.useState(emptyAuthForm);
   const [activeTab, setActiveTab] = React.useState('dashboard');
   const [loading, setLoading] = React.useState(true);
   const [refreshing, setRefreshing] = React.useState(false);
@@ -64,17 +92,16 @@ function App() {
   const [transactions, setTransactions] = React.useState(mockTransactions);
   const [form, setForm] = React.useState(emptyForm);
 
-  const loadData = React.useCallback(async () => {
-    setError('');
+  const loadDemoData = React.useCallback(() => {
+    const nextDashboard = sumDashboardData(mockTransactions, mockAccounts, mockCategories);
+    setDashboard(nextDashboard);
+    setAccounts(mockAccounts);
+    setCategories(mockCategories);
+    setTransactions(mockTransactions);
+  }, []);
 
-    if (!useApi) {
-      const nextDashboard = sumDashboardData(mockTransactions, mockAccounts, mockCategories);
-      setDashboard(nextDashboard);
-      setAccounts(mockAccounts);
-      setCategories(mockCategories);
-      setTransactions(mockTransactions);
-      return;
-    }
+  const loadRemoteData = React.useCallback(async () => {
+    setError('');
 
     const [dashboardResponse, accountsResponse, categoriesResponse, transactionsResponse] = await Promise.all([
       getDashboard(),
@@ -89,22 +116,117 @@ function App() {
     setTransactions(transactionsResponse.data);
   }, []);
 
+  const resetAuthState = React.useCallback(() => {
+    setAuthUser(null);
+    setAuthLoading(false);
+    setAuthSubmitting(false);
+    setAuthError('');
+    setError('');
+    setLoading(false);
+  }, []);
+
   React.useEffect(() => {
-    loadData()
-      .catch(() => {
-        setError('Nao foi possivel conectar na API. Usando dados de demonstracao.');
-        setDashboard(sumDashboardData(mockTransactions, mockAccounts, mockCategories));
-        setAccounts(mockAccounts);
-        setCategories(mockCategories);
-        setTransactions(mockTransactions);
+    if (!hasApi) {
+      loadDemoData();
+      setAuthLoading(false);
+      setLoading(false);
+      return;
+    }
+
+    const storedToken = localStorage.getItem(STORAGE_KEY);
+    if (!storedToken) {
+      setAuthLoading(false);
+      setLoading(false);
+      return;
+    }
+
+    setAuthLoading(true);
+    setLoading(true);
+    setAuthToken(storedToken);
+
+    getMe()
+      .then((response) => {
+        setAuthUser(response.data);
+        setSessionMode('auth');
+        return loadRemoteData();
       })
-      .finally(() => setLoading(false));
-  }, [loadData]);
+      .catch(() => {
+        localStorage.removeItem(STORAGE_KEY);
+        clearAuthToken();
+        resetAuthState();
+        setAuthError('Sua sessao expirou. Entre novamente.');
+      })
+      .finally(() => {
+        setAuthLoading(false);
+        setLoading(false);
+      });
+  }, [hasApi, loadDemoData, loadRemoteData, resetAuthState]);
+
+  const handleAuthChange = (event) => {
+    const { name, value } = event.target;
+    setAuthForm((current) => ({ ...current, [name]: value }));
+  };
+
+  const handleAuthSubmit = async (event) => {
+    event.preventDefault();
+    setAuthSubmitting(true);
+    setAuthError('');
+
+    try {
+      const response =
+        authView === 'register' ? await registerUser(authForm) : await loginUser(authForm);
+      const { token, user } = response.data;
+
+      localStorage.setItem(STORAGE_KEY, token);
+      setAuthToken(token);
+      setAuthUser(user);
+      setSessionMode('auth');
+      setLoading(true);
+      await loadRemoteData();
+      setLoading(false);
+    } catch (submissionError) {
+      setAuthError(submissionError.message || 'Nao foi possivel autenticar.');
+    } finally {
+      setAuthSubmitting(false);
+      setLoading(false);
+    }
+  };
+
+  const handleUseDemo = () => {
+    localStorage.removeItem(STORAGE_KEY);
+    clearAuthToken();
+    setSessionMode('demo');
+    setAuthUser(null);
+    setAuthError('');
+    loadDemoData();
+    setLoading(false);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem(STORAGE_KEY);
+    clearAuthToken();
+    setAuthUser(null);
+    setSessionMode('auth');
+    setAuthForm(emptyAuthForm);
+    setActiveTab('dashboard');
+    loadDemoData();
+    setLoading(false);
+  };
 
   const handleRefresh = async () => {
+    if (sessionMode === 'demo') {
+      setRefreshing(true);
+      try {
+        loadDemoData();
+      } finally {
+        setRefreshing(false);
+      }
+      return;
+    }
+
     setRefreshing(true);
     try {
-      await loadData();
+      await loadRemoteData();
     } catch {
       setError('Nao foi possivel atualizar os dados agora.');
     } finally {
@@ -126,7 +248,7 @@ function App() {
       initialBalance: Number(form.accountBalance || 0)
     };
 
-    if (!useApi) {
+    if (sessionMode === 'demo') {
       const nextAccount = {
         id: Date.now(),
         currentBalance: payload.initialBalance,
@@ -156,7 +278,7 @@ function App() {
       color: form.categoryColor
     };
 
-    if (!useApi) {
+    if (sessionMode === 'demo') {
       const nextCategory = {
         id: Date.now(),
         active: true,
@@ -187,7 +309,7 @@ function App() {
       categoryId: Number(form.transactionCategoryId)
     };
 
-    if (!useApi) {
+    if (sessionMode === 'demo') {
       const nextTransaction = {
         id: Date.now(),
         status: 'posted',
@@ -205,7 +327,7 @@ function App() {
       const response = await createTransaction(payload);
       setTransactions((current) => [response.data, ...current]);
       setForm((current) => ({ ...current, transactionDescription: '', transactionAmount: '' }));
-      await handleRefresh();
+      await loadRemoteData();
     } catch {
       setError('Nao foi possivel salvar o lancamento.');
     }
@@ -295,10 +417,39 @@ function App() {
     dashboard: (
       <>
         <div className="metrics-grid">
-          <MetricCard label="Saldo atual" value={Number(dashboard.balance || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })} hint="Consolidado de receitas e despesas" tone="balance" />
-          <MetricCard label="Receitas" value={Number(dashboard.income || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })} hint="Valores positivos do periodo" tone="income" />
-          <MetricCard label="Despesas" value={Number(dashboard.expense || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })} hint="Saidas do periodo" tone="expense" />
-          <MetricCard label="Lancamentos" value={String(dashboard.totalTransactions || 0)} hint="Movimentacoes registradas" tone="default" />
+          <MetricCard
+            label="Saldo atual"
+            value={Number(dashboard.balance || 0).toLocaleString('pt-BR', {
+              style: 'currency',
+              currency: 'BRL'
+            })}
+            hint="Consolidado de receitas e despesas"
+            tone="balance"
+          />
+          <MetricCard
+            label="Receitas"
+            value={Number(dashboard.income || 0).toLocaleString('pt-BR', {
+              style: 'currency',
+              currency: 'BRL'
+            })}
+            hint="Valores positivos do periodo"
+            tone="income"
+          />
+          <MetricCard
+            label="Despesas"
+            value={Number(dashboard.expense || 0).toLocaleString('pt-BR', {
+              style: 'currency',
+              currency: 'BRL'
+            })}
+            hint="Saidas do periodo"
+            tone="expense"
+          />
+          <MetricCard
+            label="Lancamentos"
+            value={String(dashboard.totalTransactions || 0)}
+            hint="Movimentacoes registradas"
+            tone="default"
+          />
         </div>
 
         <div className="two-columns">
@@ -338,15 +489,37 @@ function App() {
     )
   };
 
+  if (authLoading) {
+    return <div className="loading loading--full">Carregando sessao...</div>;
+  }
+
+  if (sessionMode === 'auth' && !authUser) {
+    return (
+      <AuthCard
+        mode={authView}
+        values={authForm}
+        onChange={handleAuthChange}
+        onSubmit={handleAuthSubmit}
+        onToggleMode={() => setAuthView((current) => (current === 'login' ? 'register' : 'login'))}
+        onDemoMode={handleUseDemo}
+        loading={authSubmitting}
+        error={authError}
+      />
+    );
+  }
+
   return (
     <div className="app-shell">
       <Sidebar activeTab={activeTab} onChangeTab={setActiveTab} />
       <main className="app-content">
         <Topbar
           title={TAB_TITLES[activeTab]}
-          subtitle="Interface clara, responsiva e preparada para evoluir com o backend Oracle."
+          subtitle="Interface clara, responsiva e pronta para trabalhar com a API protegida."
           onRefresh={handleRefresh}
           loading={refreshing}
+          user={authUser}
+          onLogout={sessionMode === 'demo' ? null : handleLogout}
+          modeLabel={sessionMode === 'demo' ? 'Modo demonstracao' : 'Sessao autenticada'}
         />
 
         {error ? <div className="alert">{error}</div> : null}
@@ -357,4 +530,3 @@ function App() {
 }
 
 export default App;
-
