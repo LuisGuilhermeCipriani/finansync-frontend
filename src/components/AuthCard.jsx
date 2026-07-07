@@ -23,13 +23,28 @@ export default function AuthCard({ mode, values, onChange, onSubmit, onToggleMod
           {isRegister ? (
             <label>
               <span>Nome</span>
-              <input name="name" value={values.name} onChange={onChange} placeholder="Seu nome" />
+              <input
+                name="name"
+                autoComplete="name"
+                value={values.name}
+                onChange={onChange}
+                placeholder="Seu nome"
+                required={isRegister}
+              />
             </label>
           ) : null}
 
           <label>
             <span>E-mail</span>
-            <input name="email" type="email" value={values.email} onChange={onChange} placeholder="voce@empresa.com" />
+            <input
+              name="email"
+              type="email"
+              autoComplete="email"
+              value={values.email}
+              onChange={onChange}
+              placeholder="voce@empresa.com"
+              required
+            />
           </label>
 
           <label>
@@ -37,9 +52,11 @@ export default function AuthCard({ mode, values, onChange, onSubmit, onToggleMod
             <input
               name="password"
               type="password"
+              autoComplete={isRegister ? 'new-password' : 'current-password'}
               value={values.password}
               onChange={onChange}
               placeholder="Sua senha"
+              required
             />
           </label>
 
@@ -51,10 +68,10 @@ export default function AuthCard({ mode, values, onChange, onSubmit, onToggleMod
         </form>
 
         <div className="auth-actions">
-          <button type="button" className="button button--ghost" onClick={onToggleMode}>
+          <button type="button" className="button button--ghost" onClick={onToggleMode} disabled={loading}>
             {isRegister ? 'Ja tenho conta' : 'Quero me cadastrar'}
           </button>
-          <button type="button" className="button button--ghost" onClick={onDemoMode}>
+          <button type="button" className="button button--ghost" onClick={onDemoMode} disabled={loading}>
             Entrar em demo
           </button>
         </div>

@@ -24,6 +24,15 @@ import { mockAccounts, mockCategories, mockDashboard, mockTransactions } from '.
 import './styles/app.css';
 
 const STORAGE_KEY = 'finansync_token';
+const emptyDashboard = {
+  accounts: 0,
+  categories: 0,
+  income: 0,
+  expense: 0,
+  balance: 0,
+  totalTransactions: 0,
+  recentTransactions: []
+};
 
 const TAB_TITLES = {
   dashboard: 'Painel executivo',
@@ -100,6 +109,13 @@ function App() {
     setTransactions(mockTransactions);
   }, []);
 
+  const resetWorkspaceData = React.useCallback(() => {
+    setDashboard(emptyDashboard);
+    setAccounts([]);
+    setCategories([]);
+    setTransactions([]);
+  }, []);
+
   const loadRemoteData = React.useCallback(async () => {
     setError('');
 
@@ -124,8 +140,9 @@ function App() {
     setAuthSubmitting(false);
     setAuthError('');
     setError('');
+    resetWorkspaceData();
     setLoading(false);
-  }, []);
+  }, [resetWorkspaceData]);
 
   React.useEffect(() => {
     const bootstrapSession = async () => {
@@ -151,6 +168,7 @@ function App() {
         const response = await getMe();
         setAuthUser(response.data);
         setSessionMode('auth');
+        resetWorkspaceData();
 
         try {
           await loadRemoteData();
@@ -169,7 +187,7 @@ function App() {
     };
 
     void bootstrapSession();
-  }, [hasApi, loadDemoData, loadRemoteData, resetAuthState]);
+  }, [hasApi, loadDemoData, loadRemoteData, resetAuthState, resetWorkspaceData]);
 
   const handleAuthChange = (event) => {
     const { name, value } = event.target;
@@ -178,12 +196,35 @@ function App() {
 
   const handleAuthSubmit = async (event) => {
     event.preventDefault();
-    setAuthSubmitting(true);
     setAuthError('');
 
+    const trimmedName = authForm.name.trim();
+    const trimmedEmail = authForm.email.trim();
+    const trimmedPassword = authForm.password.trim();
+
+    if (authView === 'register' && !trimmedName) {
+      setAuthError('Informe seu nome para criar a conta.');
+      return;
+    }
+
+    if (!trimmedEmail) {
+      setAuthError('Informe um e-mail valido.');
+      return;
+    }
+
+    if (!trimmedPassword) {
+      setAuthError('Informe sua senha.');
+      return;
+    }
+
+    setAuthSubmitting(true);
+
     try {
-      const response =
-        authView === 'register' ? await registerUser(authForm) : await loginUser(authForm);
+      const payload =
+        authView === 'register'
+          ? { name: trimmedName, email: trimmedEmail, password: trimmedPassword }
+          : { email: trimmedEmail, password: trimmedPassword };
+      const response = authView === 'register' ? await registerUser(payload) : await loginUser(payload);
       const { token, user } = response.data;
 
       localStorage.setItem(STORAGE_KEY, token);
@@ -191,6 +232,7 @@ function App() {
       setAuthUser(user);
       setSessionMode('auth');
       setLoading(true);
+      resetWorkspaceData();
       try {
         await loadRemoteData();
       } catch {
@@ -224,7 +266,7 @@ function App() {
     setAuthView('login');
     setAuthForm(emptyAuthForm);
     setActiveTab('dashboard');
-    loadDemoData();
+    resetWorkspaceData();
     setLoading(false);
   };
 
