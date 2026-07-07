@@ -24,10 +24,19 @@ export default function AuthCard({
           </div>
         </div>
 
-        <h1>Entre para acessar suas contas, categorias e lancamentos.</h1>
+        <div className="auth-intro">
+          <p className="eyebrow auth-eyebrow">{isRegister ? 'Criacao de acesso' : 'Acesso protegido'}</p>
+          <h1>Entre para acessar suas contas, categorias e lancamentos.</h1>
+        </div>
         <p className="muted">
-          Use sua conta cadastrada no Oracle ou entre em modo demonstracao para testar a interface.
+          Use sua conta cadastrada na API ou entre em modo demonstracao para testar a interface.
         </p>
+
+        <div className="auth-pills" aria-label="Recursos da autenticacao">
+          <span>Login seguro</span>
+          <span>Cadastro rapido</span>
+          <span>Modo demo</span>
+        </div>
 
         <form className="auth-form" onSubmit={onSubmit}>
           {isRegister ? (

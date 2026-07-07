@@ -319,10 +319,34 @@ th {
   margin-bottom: 8px;
 }
 
+.auth-intro {
+  display: grid;
+  gap: 10px;
+}
+
+.auth-eyebrow {
+  margin-bottom: 0;
+}
+
 .auth-panel h1 {
   margin: 0;
   font-size: clamp(2rem, 4vw, 3rem);
   line-height: 1.05;
+}
+
+.auth-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.auth-pills span {
+  padding: 9px 12px;
+  border-radius: 999px;
+  background: rgba(56, 189, 248, 0.1);
+  border: 1px solid rgba(56, 189, 248, 0.18);
+  color: #c7eaff;
+  font-size: 0.88rem;
 }
 
 .auth-form {
