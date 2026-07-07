@@ -40,8 +40,11 @@ export default function AuthCard({
         </div>
 
         <div key={mode} className="auth-panel__content">
-          <div className="auth-intro">
-            <p className="eyebrow auth-eyebrow">{isRegister ? 'Criar acesso' : 'Entrar agora'}</p>
+          <div className="auth-intro auth-intro--spaced">
+            <div className="auth-intro__eyebrow">
+              <p className="eyebrow auth-eyebrow">{isRegister ? 'Criar acesso' : 'Entrar agora'}</p>
+              <span className="auth-intro__line" />
+            </div>
             <h1>{headline}</h1>
           </div>
           <p className="muted">{helperText}</p>
@@ -102,8 +105,8 @@ export default function AuthCard({
                   {showPassword ? 'Ocultar' : 'Mostrar'}
                 </button>
               </div>
-            <small className="auth-hint">Mantenha a senha em sigilo ao usar computadores compartilhados.</small>
-          </label>
+              <small className="auth-hint">Mantenha a senha em sigilo ao usar computadores compartilhados.</small>
+            </label>
 
           {notice ? <div className="auth-banner auth-banner--info">{notice}</div> : null}
           {error ? <div className="auth-banner auth-banner--error">{error}</div> : null}
