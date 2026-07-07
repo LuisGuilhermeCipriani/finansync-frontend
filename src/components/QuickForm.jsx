@@ -11,16 +11,31 @@ export default function QuickForm({ title, description, fields, values, onChange
         {fields.map((field) => (
           <label key={field.name}>
             <span>{field.label}</span>
-            <input
-              type={field.type || 'text'}
-              name={field.name}
-              value={values[field.name]}
-              onChange={onChange}
-              placeholder={field.placeholder}
-              min={field.min}
-              step={field.step}
-              list={field.list}
-            />
+            {field.type === 'select' ? (
+              <select name={field.name} value={values[field.name]} onChange={onChange}>
+                {(field.options || []).map((option) => {
+                  const optionValue = typeof option === 'string' ? option : option.value;
+                  const optionLabel = typeof option === 'string' ? option : option.label;
+
+                  return (
+                    <option key={optionValue} value={optionValue}>
+                      {optionLabel}
+                    </option>
+                  );
+                })}
+              </select>
+            ) : (
+              <input
+                type={field.type || 'text'}
+                name={field.name}
+                value={values[field.name]}
+                onChange={onChange}
+                placeholder={field.placeholder}
+                min={field.min}
+                step={field.step}
+                list={field.list}
+              />
+            )}
           </label>
         ))}
       </div>

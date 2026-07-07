@@ -436,7 +436,15 @@ function App() {
         description="Cadastre contas correntes, poupanca ou caixa."
         fields={[
           { name: 'accountName', label: 'Nome da conta', placeholder: 'Conta principal' },
-          { name: 'accountType', label: 'Tipo', placeholder: 'corrente' },
+          {
+            name: 'accountType',
+            label: 'Tipo',
+            type: 'select',
+            options: [
+              { value: 'corrente', label: 'Corrente' },
+              { value: 'poupanca', label: 'Poupança' }
+            ]
+          },
           { name: 'accountInstitution', label: 'Instituicao', placeholder: 'Banco X' },
           { name: 'accountBalance', label: 'Saldo inicial', type: 'number', min: 0, step: '0.01' }
         ]}

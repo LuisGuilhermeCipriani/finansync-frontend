@@ -171,6 +171,7 @@
 .button:hover,
 .button--ghost:hover,
 .auth-password__toggle:hover {
+  background: linear-gradient(135deg, rgba(56, 189, 248, 0.95), rgba(14, 165, 233, 0.92));
   transform: translateY(-1px);
 }
 
@@ -393,7 +394,19 @@ tbody tr {
   transition: border-color 160ms ease, background 160ms ease, box-shadow 160ms ease;
 }
 
+.quick-form select {
+  width: 100%;
+  appearance: none;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: rgba(15, 23, 42, 0.82);
+  color: var(--text);
+  padding: 13px 14px;
+  transition: border-color 160ms ease, background 160ms ease, box-shadow 160ms ease;
+}
+
 .quick-form input:hover,
+.quick-form select:hover,
 .auth-form input:hover {
   border-color: rgba(56, 189, 248, 0.26);
   background: rgba(15, 23, 42, 0.9);
