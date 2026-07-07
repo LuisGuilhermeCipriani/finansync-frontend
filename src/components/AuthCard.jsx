@@ -14,10 +14,10 @@ export default function AuthCard({
   const isRegister = mode === 'register';
   const [showPassword, setShowPassword] = React.useState(false);
   const headline = isRegister
-    ? 'Crie sua conta e comece a organizar suas finanças em poucos minutos.'
-    : 'Entre para retomar seu painel financeiro com contas, categorias e lançamentos.';
+    ? 'Crie sua conta e comece a organizar suas finanças agora.'
+    : 'Entre para retomar seu painel com contas, categorias e lançamentos.';
   const helperText = isRegister
-    ? 'O cadastro é rápido. Depois disso, você já pode testar a interface ou seguir para a API.'
+    ? 'O cadastro e rapido. Depois disso, voce ja pode testar a interface ou seguir para a API.'
     : 'Use sua conta cadastrada na API ou entre em demo para explorar a interface sem risco.';
 
   React.useEffect(() => {
@@ -48,7 +48,7 @@ export default function AuthCard({
 
           <div className="auth-pills" aria-label="Recursos da autenticacao">
             <span>{isRegister ? 'Cadastro guiado' : 'Login seguro'}</span>
-            <span>{isRegister ? 'Acesso imediato' : 'Retomada rapida'}</span>
+            <span>{isRegister ? 'Painel liberado' : 'Retomada rapida'}</span>
             <span>Modo demo</span>
           </div>
 
@@ -102,14 +102,17 @@ export default function AuthCard({
                   {showPassword ? 'Ocultar' : 'Mostrar'}
                 </button>
               </div>
-              <small className="auth-hint">Mantenha a senha em sigilo ao usar computadores compartilhados.</small>
-            </label>
+            <small className="auth-hint">Mantenha a senha em sigilo ao usar computadores compartilhados.</small>
+          </label>
 
-            {notice ? <div className="auth-banner auth-banner--info">{notice}</div> : null}
-            {error ? <div className="auth-banner auth-banner--error">{error}</div> : null}
+          {notice ? <div className="auth-banner auth-banner--info">{notice}</div> : null}
+          {error ? <div className="auth-banner auth-banner--error">{error}</div> : null}
+          <p className="auth-note">
+            {isRegister ? 'Ao criar a conta, voce ja entra pronto para testar o fluxo.' : 'Se preferir, entre em demo e explore sem alterar dados reais.'}
+          </p>
 
-            <button type="submit" className="button" disabled={loading}>
-              {loading ? 'Processando...' : isRegister ? 'Criar conta' : 'Entrar'}
+          <button type="submit" className="button" disabled={loading}>
+            {loading ? 'Processando...' : isRegister ? 'Criar conta' : 'Entrar'}
             </button>
           </form>
 
