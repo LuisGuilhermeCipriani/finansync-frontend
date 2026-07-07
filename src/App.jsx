@@ -38,7 +38,7 @@ const TAB_TITLES = {
   dashboard: 'Painel executivo',
   contas: 'Contas bancarias',
   categorias: 'Categorias financeiras',
-  lancamentos: 'Lancamentos e fluxo'
+  lancamentos: 'Lancamentos e fluxo de caixa'
 };
 
 const emptyForm = {
@@ -464,7 +464,7 @@ function App() {
     lancamentos: (
       <QuickForm
         title="Novo lancamento"
-        description="Registre entradas e saidas do caixa."
+        description="Registre entradas e saidas do fluxo de caixa."
         fields={[
           { name: 'transactionDescription', label: 'Descricao', placeholder: 'Servicos prestados' },
           { name: 'transactionAmount', label: 'Valor', type: 'number', min: 0, step: '0.01' },
