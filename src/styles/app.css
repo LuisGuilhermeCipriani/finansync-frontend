@@ -319,6 +319,12 @@ th {
   margin-bottom: 8px;
 }
 
+.auth-panel__content {
+  display: grid;
+  gap: 20px;
+  animation: auth-panel-enter 260ms ease-out both;
+}
+
 .auth-intro {
   display: grid;
   gap: 10px;
@@ -457,6 +463,18 @@ th {
   min-height: 100vh;
   display: grid;
   place-items: center;
+}
+
+@keyframes auth-panel-enter {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @media (max-width: 720px) {
