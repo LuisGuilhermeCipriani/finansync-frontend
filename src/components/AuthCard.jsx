@@ -13,6 +13,12 @@ export default function AuthCard({
 }) {
   const isRegister = mode === 'register';
   const [showPassword, setShowPassword] = React.useState(false);
+  const headline = isRegister
+    ? 'Crie sua conta e comece a organizar suas finanças em poucos minutos.'
+    : 'Entre para retomar seu painel financeiro com contas, categorias e lançamentos.';
+  const helperText = isRegister
+    ? 'O cadastro é rápido. Depois disso, você já pode testar a interface ou seguir para a API.'
+    : 'Use sua conta cadastrada na API ou entre em demo para explorar a interface sem risco.';
 
   React.useEffect(() => {
     setShowPassword(false);
@@ -35,16 +41,14 @@ export default function AuthCard({
 
         <div key={mode} className="auth-panel__content">
           <div className="auth-intro">
-            <p className="eyebrow auth-eyebrow">{isRegister ? 'Criacao de acesso' : 'Acesso protegido'}</p>
-            <h1>Entre para acessar suas contas, categorias e lancamentos.</h1>
+            <p className="eyebrow auth-eyebrow">{isRegister ? 'Criar acesso' : 'Entrar agora'}</p>
+            <h1>{headline}</h1>
           </div>
-          <p className="muted">
-            Use sua conta cadastrada na API ou entre em modo demonstracao para testar a interface.
-          </p>
+          <p className="muted">{helperText}</p>
 
           <div className="auth-pills" aria-label="Recursos da autenticacao">
-            <span>Login seguro</span>
-            <span>Cadastro rapido</span>
+            <span>{isRegister ? 'Cadastro guiado' : 'Login seguro'}</span>
+            <span>{isRegister ? 'Acesso imediato' : 'Retomada rapida'}</span>
             <span>Modo demo</span>
           </div>
 
@@ -111,7 +115,7 @@ export default function AuthCard({
 
           <div className="auth-actions">
             <button type="button" className="button button--ghost" onClick={onToggleMode} disabled={loading}>
-              {isRegister ? 'Ja tenho conta' : 'Quero me cadastrar'}
+              {isRegister ? 'Ja tenho conta' : 'Quero criar conta'}
             </button>
             <button type="button" className="button button--ghost" onClick={onDemoMode} disabled={loading}>
               Entrar em demo
