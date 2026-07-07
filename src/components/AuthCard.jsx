@@ -28,6 +28,10 @@ export default function AuthCard({
             <span>Gestao Financeira</span>
           </div>
         </div>
+        <div className="auth-badge-row">
+          <span className="auth-badge">API protegida</span>
+          <span className="auth-badge auth-badge--soft">Demo disponivel</span>
+        </div>
 
         <div key={mode} className="auth-panel__content">
           <div className="auth-intro">
