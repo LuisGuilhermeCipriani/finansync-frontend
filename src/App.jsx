@@ -262,8 +262,8 @@ function App() {
     }
 
     try {
-      const response = await createAccount(payload);
-      setAccounts((current) => [response.data, ...current]);
+      await createAccount(payload);
+      await loadRemoteData();
       setForm((current) => ({ ...current, accountName: '', accountInstitution: '', accountBalance: '' }));
     } catch {
       setError('Nao foi possivel salvar a conta.');
@@ -291,8 +291,8 @@ function App() {
     }
 
     try {
-      const response = await createCategory(payload);
-      setCategories((current) => [response.data, ...current]);
+      await createCategory(payload);
+      await loadRemoteData();
       setForm((current) => ({ ...current, categoryName: '' }));
     } catch {
       setError('Nao foi possivel salvar a categoria.');
@@ -324,8 +324,7 @@ function App() {
     }
 
     try {
-      const response = await createTransaction(payload);
-      setTransactions((current) => [response.data, ...current]);
+      await createTransaction(payload);
       setForm((current) => ({ ...current, transactionDescription: '', transactionAmount: '' }));
       await loadRemoteData();
     } catch {

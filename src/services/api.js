@@ -1,10 +1,6 @@
 const API_URL = import.meta.env.VITE_API_URL;
 let authToken = localStorage.getItem('finansync_token') || '';
 
-if (!API_URL) {
-  throw new Error('VITE_API_URL deve ser definido no arquivo .env');
-}
-
 export function setAuthToken(token) {
   authToken = token || '';
 }
@@ -14,6 +10,10 @@ export function clearAuthToken() {
 }
 
 async function request(path, options = {}) {
+  if (!API_URL) {
+    throw new Error('VITE_API_URL deve ser definido no arquivo .env para usar a API');
+  }
+
   const response = await fetch(`${API_URL}${path}`, {
     headers: {
       'Content-Type': 'application/json',
