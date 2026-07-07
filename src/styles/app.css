@@ -280,13 +280,13 @@
   overflow: auto;
   border-radius: 18px;
   border: 1px solid var(--border);
+  background: rgba(8, 15, 30, 0.36);
 }
 
 table {
   width: 100%;
   border-collapse: collapse;
   min-width: 540px;
-  background: rgba(8, 15, 30, 0.35);
 }
 
 th,
@@ -297,14 +297,23 @@ td {
 }
 
 th {
-  background: rgba(15, 23, 42, 0.72);
-  color: #cbd5e1;
+  background: rgba(15, 23, 42, 0.84);
+  color: #e2e8f0;
   font-size: 0.85rem;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
   position: sticky;
   top: 0;
   z-index: 1;
   backdrop-filter: blur(8px);
+}
+
+tbody tr:nth-child(even) td {
+  background: rgba(15, 23, 42, 0.18);
+}
+
+tbody tr:hover td {
+  background: rgba(56, 189, 248, 0.06);
 }
 
 .empty-state {
