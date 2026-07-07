@@ -126,40 +126,47 @@ function App() {
   }, []);
 
   React.useEffect(() => {
-    if (!hasApi) {
-      loadDemoData();
-      setAuthLoading(false);
-      setLoading(false);
-      return;
-    }
+    const bootstrapSession = async () => {
+      if (!hasApi) {
+        loadDemoData();
+        setAuthLoading(false);
+        setLoading(false);
+        return;
+      }
 
-    const storedToken = localStorage.getItem(STORAGE_KEY);
-    if (!storedToken) {
-      setAuthLoading(false);
-      setLoading(false);
-      return;
-    }
+      const storedToken = localStorage.getItem(STORAGE_KEY);
+      if (!storedToken) {
+        setAuthLoading(false);
+        setLoading(false);
+        return;
+      }
 
-    setAuthLoading(true);
-    setLoading(true);
-    setAuthToken(storedToken);
+      setAuthLoading(true);
+      setLoading(true);
+      setAuthToken(storedToken);
 
-    getMe()
-      .then((response) => {
+      try {
+        const response = await getMe();
         setAuthUser(response.data);
         setSessionMode('auth');
-        return loadRemoteData();
-      })
-      .catch(() => {
+
+        try {
+          await loadRemoteData();
+        } catch {
+          setError('Nao foi possivel carregar os dados agora.');
+        }
+      } catch {
         localStorage.removeItem(STORAGE_KEY);
         clearAuthToken();
         resetAuthState();
         setAuthError('Sua sessao expirou. Entre novamente.');
-      })
-      .finally(() => {
+      } finally {
         setAuthLoading(false);
         setLoading(false);
-      });
+      }
+    };
+
+    void bootstrapSession();
   }, [hasApi, loadDemoData, loadRemoteData, resetAuthState]);
 
   const handleAuthChange = (event) => {
@@ -182,8 +189,11 @@ function App() {
       setAuthUser(user);
       setSessionMode('auth');
       setLoading(true);
-      await loadRemoteData();
-      setLoading(false);
+      try {
+        await loadRemoteData();
+      } catch {
+        setError('Nao foi possivel carregar os dados agora.');
+      }
     } catch (submissionError) {
       setAuthError(submissionError.message || 'Nao foi possivel autenticar.');
     } finally {
