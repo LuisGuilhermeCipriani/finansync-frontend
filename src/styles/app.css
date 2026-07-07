@@ -564,9 +564,21 @@ th {
     width: fit-content;
   }
 
+  .auth-pills {
+    flex-direction: column;
+  }
+
+  .auth-pills span {
+    width: 100%;
+  }
+
   .topbar__actions,
   .auth-actions {
     justify-content: stretch;
+  }
+
+  .auth-actions > .button {
+    flex: 1;
   }
 
   .topbar__user {
@@ -580,6 +592,7 @@ th {
 
   .auth-password__toggle {
     padding: 12px 14px;
+    width: 100%;
   }
 
   .auth-intro__eyebrow {
