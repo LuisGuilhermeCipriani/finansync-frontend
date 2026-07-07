@@ -460,7 +460,15 @@ function App() {
         description="Organize receitas e despesas com cores claras."
         fields={[
           { name: 'categoryName', label: 'Nome da categoria', placeholder: 'Aluguel' },
-          { name: 'categoryType', label: 'Tipo', placeholder: 'expense' },
+          {
+            name: 'categoryType',
+            label: 'Tipo',
+            type: 'select',
+            options: [
+              { value: 'income', label: 'Receita' },
+              { value: 'expense', label: 'Despesa' }
+            ]
+          },
           { name: 'categoryColor', label: 'Cor', type: 'color' }
         ]}
         values={form}
@@ -476,7 +484,15 @@ function App() {
         fields={[
           { name: 'transactionDescription', label: 'Descricao', placeholder: 'Servicos prestados' },
           { name: 'transactionAmount', label: 'Valor', type: 'number', min: 0, step: '0.01' },
-          { name: 'transactionType', label: 'Tipo', placeholder: 'expense' },
+          {
+            name: 'transactionType',
+            label: 'Tipo',
+            type: 'select',
+            options: [
+              { value: 'income', label: 'Receita' },
+              { value: 'expense', label: 'Despesa' }
+            ]
+          },
           { name: 'transactionAccountId', label: 'Conta ID', type: 'number', min: 1 },
           { name: 'transactionCategoryId', label: 'Categoria ID', type: 'number', min: 1 }
         ]}
