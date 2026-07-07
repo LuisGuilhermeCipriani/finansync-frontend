@@ -305,8 +305,8 @@ th {
 }
 
 .auth-panel {
-  width: min(100%, 560px);
-  padding: 32px;
+  width: min(100%, 640px);
+  padding: 36px;
   border-radius: 32px;
   background: rgba(8, 15, 30, 0.82);
   border: 1px solid var(--border);
@@ -477,10 +477,14 @@ th {
 
 .auth-actions,
 .topbar__actions {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
-  flex-wrap: wrap;
-  justify-content: flex-end;
+  justify-content: stretch;
+}
+
+.auth-actions .button {
+  width: 100%;
 }
 
 .auth-banner {
@@ -574,7 +578,7 @@ th {
 
   .topbar__actions,
   .auth-actions {
-    justify-content: stretch;
+    grid-template-columns: 1fr;
   }
 
   .auth-actions > .button {
