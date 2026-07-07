@@ -4,7 +4,7 @@ export default function Topbar({ title, subtitle, onRefresh, loading, user, onLo
   return (
     <header className="topbar">
       <div className="topbar__content">
-        <p className="eyebrow">Sistema de gestao financeira</p>
+        <p className="eyebrow">Sistema de gestão financeira</p>
         <h1>{title}</h1>
         <p className="muted">{subtitle}</p>
         <div className="topbar__meta">

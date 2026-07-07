@@ -14,7 +14,7 @@ export default function Sidebar({ activeTab, onChangeTab }) {
         <div className="brand__mark">F</div>
         <div>
           <strong>Finansync</strong>
-          <span>Gestao Financeira</span>
+          <span>Gestão Financeira</span>
         </div>
       </div>
 
@@ -32,7 +32,7 @@ export default function Sidebar({ activeTab, onChangeTab }) {
       </nav>
 
       <div className="sidebar__footer">
-        <p>Versao desktop web, pronta para evoluir para Electron.</p>
+        <p>Versão desktop web, pronta para evoluir para Electron.</p>
       </div>
     </aside>
   );
