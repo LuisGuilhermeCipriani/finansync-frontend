@@ -3,8 +3,10 @@
 export default function QuickForm({ title, description, fields, values, onChange, onSubmit, submitLabel }) {
   return (
     <form className="quick-form" onSubmit={onSubmit}>
-      <h3>{title}</h3>
-      {description ? <p>{description}</p> : null}
+      <div className="quick-form__intro">
+        <h3>{title}</h3>
+        {description ? <p>{description}</p> : null}
+      </div>
       <div className="quick-form__grid">
         {fields.map((field) => (
           <label key={field.name}>
@@ -22,7 +24,9 @@ export default function QuickForm({ title, description, fields, values, onChange
           </label>
         ))}
       </div>
-      <button type="submit" className="button button--primary">{submitLabel}</button>
+      <button type="submit" className="button quick-form__submit">
+        {submitLabel}
+      </button>
     </form>
   );
 }
