@@ -64,11 +64,11 @@ const emptyAuthForm = {
 
 function sumDashboardData(transactions, accounts, categories) {
   const receita = transactions
-    .filter((item) => normalizeMovementType(item.type) === 'receita')
+    .filter((item) => normalizarTipoMovimento(item.type) === 'receita')
     .reduce((sum, item) => sum + Number(item.amount || 0), 0);
 
   const despesa = transactions
-    .filter((item) => normalizeMovementType(item.type) === 'despesa')
+    .filter((item) => normalizarTipoMovimento(item.type) === 'despesa')
     .reduce((sum, item) => sum + Number(item.amount || 0), 0);
 
   return {
@@ -82,7 +82,7 @@ function sumDashboardData(transactions, accounts, categories) {
   };
 }
 
-function normalizeMovementType(value) {
+function normalizarTipoMovimento(value) {
   const normalized = String(value || '').toLowerCase();
 
   if (normalized === 'income' || normalized === 'receita') {
@@ -96,11 +96,11 @@ function normalizeMovementType(value) {
   return 'despesa';
 }
 
-function formatMovementType(value) {
-  return normalizeMovementType(value) === 'receita' ? 'Receita' : 'Despesa';
+function formatarTipoMovimento(value) {
+  return normalizarTipoMovimento(value) === 'receita' ? 'Receita' : 'Despesa';
 }
 
-function formatAccountType(value) {
+function formatarTipoConta(value) {
   return value === 'poupanca' ? 'Poupança' : 'Corrente';
 }
 
@@ -108,7 +108,7 @@ function parseCurrencyCents(value) {
   return Number(String(value ?? '').replace(/\D/g, '')) || 0;
 }
 
-function normalizeDashboardData(data) {
+function normalizarDadosDashboard(data) {
   return {
     accounts: Number(data?.accounts || 0),
     categories: Number(data?.categories || 0),
@@ -118,34 +118,34 @@ function normalizeDashboardData(data) {
     totalTransactions: Number(data?.totalTransactions ?? data?.total_transactions ?? 0),
     recentTransactions: (data?.recentTransactions || data?.recent_transactions || []).map((item) => ({
       ...item,
-      type: normalizeMovementType(item.type)
+      type: normalizarTipoMovimento(item.type)
     }))
   };
 }
 
-function normalizeAccountData(item) {
+function normalizarConta(item) {
   return {
     ...item,
     type: item?.type === 'poupanca' ? 'poupanca' : 'corrente'
   };
 }
 
-function normalizeCategoryData(item) {
+function normalizarCategoria(item) {
   return {
     ...item,
-    type: normalizeMovementType(item.type)
+    type: normalizarTipoMovimento(item.type)
   };
 }
 
-function normalizeTransactionData(item) {
+function normalizarLancamento(item) {
   return {
     ...item,
-    type: normalizeMovementType(item.type),
-    status: normalizeTransactionStatus(item.status)
+    type: normalizarTipoMovimento(item.type),
+    status: normalizarStatusLancamento(item.status)
   };
 }
 
-function normalizeTransactionStatus(value) {
+function normalizarStatusLancamento(value) {
   const normalized = String(value || '').toLowerCase();
 
   if (normalized === 'posted' || normalized === 'efetivado') {
@@ -155,8 +155,8 @@ function normalizeTransactionStatus(value) {
   return normalized ? normalized : 'efetivado';
 }
 
-function formatStatus(value) {
-  const normalized = normalizeTransactionStatus(value);
+function formatarStatus(value) {
+  const normalized = normalizarStatusLancamento(value);
   return normalized.charAt(0).toUpperCase() + normalized.slice(1);
 }
 
@@ -182,10 +182,10 @@ function App() {
   const [form, setForm] = React.useState(emptyForm);
 
   const loadDemoData = React.useCallback(() => {
-    const nextAccounts = mockAccounts.map(normalizeAccountData);
-    const nextCategories = mockCategories.map(normalizeCategoryData);
-    const nextTransactions = mockTransactions.map(normalizeTransactionData);
-    setDashboard(normalizeDashboardData(sumDashboardData(nextTransactions, nextAccounts, nextCategories)));
+    const nextAccounts = mockAccounts.map(normalizarConta);
+    const nextCategories = mockCategories.map(normalizarCategoria);
+    const nextTransactions = mockTransactions.map(normalizarLancamento);
+    setDashboard(normalizarDadosDashboard(sumDashboardData(nextTransactions, nextAccounts, nextCategories)));
     setAccounts(nextAccounts);
     setCategories(nextCategories);
     setTransactions(nextTransactions);
@@ -208,10 +208,10 @@ function App() {
       getTransactions()
     ]);
 
-    setDashboard(normalizeDashboardData(dashboardResponse.data));
-    setAccounts((accountsResponse.data || []).map(normalizeAccountData));
-    setCategories((categoriesResponse.data || []).map(normalizeCategoryData));
-    setTransactions((transactionsResponse.data || []).map(normalizeTransactionData));
+    setDashboard(normalizarDadosDashboard(dashboardResponse.data));
+    setAccounts((accountsResponse.data || []).map(normalizarConta));
+    setCategories((categoriesResponse.data || []).map(normalizarCategoria));
+    setTransactions((transactionsResponse.data || []).map(normalizarLancamento));
   }, []);
 
   const resetAuthState = React.useCallback(() => {
@@ -430,7 +430,7 @@ function App() {
     setError('');
     const payload = {
       name: accountName,
-      type: formatAccountType(form.accountType),
+      type: formatarTipoConta(form.accountType),
       institution: accountInstitution,
       initialBalance: parseCurrencyCents(form.accountBalance) / 100
     };
@@ -520,8 +520,8 @@ function App() {
         ...payload
       };
       const nextTransactions = [nextTransaction, ...transactions];
-      setTransactions(nextTransactions.map(normalizeTransactionData));
-      setDashboard(normalizeDashboardData(sumDashboardData(nextTransactions, accounts, categories)));
+      setTransactions(nextTransactions.map(normalizarLancamento));
+      setDashboard(normalizarDadosDashboard(sumDashboardData(nextTransactions, accounts, categories)));
       setForm((current) => ({ ...current, transactionDescription: '', transactionAmount: '0' }));
       return;
     }
@@ -538,7 +538,7 @@ function App() {
   const columns = {
     accounts: [
       { key: 'name', label: 'Nome' },
-      { key: 'type', label: 'Tipo', render: (row) => formatAccountType(row.type) },
+      { key: 'type', label: 'Tipo', render: (row) => formatarTipoConta(row.type) },
       { key: 'institution', label: 'Instituição' },
       {
         key: 'currentBalance',
@@ -548,7 +548,7 @@ function App() {
     ],
     categories: [
       { key: 'name', label: 'Nome' },
-      { key: 'type', label: 'Tipo', render: (row) => formatMovementType(row.type) },
+      { key: 'type', label: 'Tipo', render: (row) => formatarTipoMovimento(row.type) },
       {
         key: 'color',
         label: 'Cor',
@@ -562,7 +562,7 @@ function App() {
     ],
     transactions: [
       { key: 'description', label: 'Descrição' },
-      { key: 'type', label: 'Tipo', render: (row) => formatMovementType(row.type) },
+      { key: 'type', label: 'Tipo', render: (row) => formatarTipoMovimento(row.type) },
       {
         key: 'accountId',
         label: 'Conta',
@@ -579,7 +579,7 @@ function App() {
         label: 'Valor',
         render: (row) => Number(row.amount || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
       },
-      { key: 'status', label: 'Status', render: (row) => formatStatus(row.status) }
+      { key: 'status', label: 'Status', render: (row) => formatarStatus(row.status) }
     ]
   };
 
