@@ -27,8 +27,8 @@ const STORAGE_KEY = 'finansync_token';
 const emptyDashboard = {
   accounts: 0,
   categories: 0,
-  income: 0,
-  expense: 0,
+  receita: 0,
+  despesa: 0,
   balance: 0,
   totalTransactions: 0,
   recentTransactions: []
@@ -47,11 +47,11 @@ const emptyForm = {
   accountInstitution: '',
   accountBalance: '0',
   categoryName: '',
-  categoryType: 'expense',
+  categoryType: 'despesa',
   categoryColor: '#2563eb',
   transactionDescription: '',
   transactionAmount: '',
-  transactionType: 'expense',
+  transactionType: 'despesa',
   transactionAccountId: '1',
   transactionCategoryId: '2'
 };
@@ -63,23 +63,41 @@ const emptyAuthForm = {
 };
 
 function sumDashboardData(transactions, accounts, categories) {
-  const income = transactions
-    .filter((item) => item.type === 'income')
+  const receita = transactions
+    .filter((item) => normalizeMovementType(item.type) === 'receita')
     .reduce((sum, item) => sum + Number(item.amount || 0), 0);
 
-  const expense = transactions
-    .filter((item) => item.type === 'expense')
+  const despesa = transactions
+    .filter((item) => normalizeMovementType(item.type) === 'despesa')
     .reduce((sum, item) => sum + Number(item.amount || 0), 0);
 
   return {
     accounts: accounts.length,
     categories: categories.length,
-    income,
-    expense,
-    balance: income - expense,
+    receita,
+    despesa,
+    balance: receita - despesa,
     totalTransactions: transactions.length,
     recentTransactions: transactions.slice(0, 5)
   };
+}
+
+function normalizeMovementType(value) {
+  const normalized = String(value || '').toLowerCase();
+
+  if (normalized === 'income' || normalized === 'receita') {
+    return 'receita';
+  }
+
+  if (normalized === 'expense' || normalized === 'despesa') {
+    return 'despesa';
+  }
+
+  return 'despesa';
+}
+
+function formatMovementType(value) {
+  return normalizeMovementType(value) === 'receita' ? 'Receita' : 'Despesa';
 }
 
 function formatAccountType(value) {
@@ -88,6 +106,42 @@ function formatAccountType(value) {
 
 function parseCurrencyCents(value) {
   return Number(String(value ?? '').replace(/\D/g, '')) || 0;
+}
+
+function normalizeDashboardData(data) {
+  return {
+    accounts: Number(data?.accounts || 0),
+    categories: Number(data?.categories || 0),
+    receita: Number(data?.receita ?? data?.income ?? 0),
+    despesa: Number(data?.despesa ?? data?.expense ?? 0),
+    balance: Number(data?.balance || 0),
+    totalTransactions: Number(data?.totalTransactions ?? data?.total_transactions ?? 0),
+    recentTransactions: (data?.recentTransactions || data?.recent_transactions || []).map((item) => ({
+      ...item,
+      type: normalizeMovementType(item.type)
+    }))
+  };
+}
+
+function normalizeAccountData(item) {
+  return {
+    ...item,
+    type: item?.type === 'poupanca' ? 'poupanca' : 'corrente'
+  };
+}
+
+function normalizeCategoryData(item) {
+  return {
+    ...item,
+    type: normalizeMovementType(item.type)
+  };
+}
+
+function normalizeTransactionData(item) {
+  return {
+    ...item,
+    type: normalizeMovementType(item.type)
+  };
 }
 
 function App() {
@@ -112,11 +166,13 @@ function App() {
   const [form, setForm] = React.useState(emptyForm);
 
   const loadDemoData = React.useCallback(() => {
-    const nextDashboard = sumDashboardData(mockTransactions, mockAccounts, mockCategories);
-    setDashboard(nextDashboard);
-    setAccounts(mockAccounts);
-    setCategories(mockCategories);
-    setTransactions(mockTransactions);
+    const nextAccounts = mockAccounts.map(normalizeAccountData);
+    const nextCategories = mockCategories.map(normalizeCategoryData);
+    const nextTransactions = mockTransactions.map(normalizeTransactionData);
+    setDashboard(normalizeDashboardData(sumDashboardData(nextTransactions, nextAccounts, nextCategories)));
+    setAccounts(nextAccounts);
+    setCategories(nextCategories);
+    setTransactions(nextTransactions);
   }, []);
 
   const resetWorkspaceData = React.useCallback(() => {
@@ -136,10 +192,10 @@ function App() {
       getTransactions()
     ]);
 
-    setDashboard(dashboardResponse.data);
-    setAccounts(accountsResponse.data);
-    setCategories(categoriesResponse.data);
-    setTransactions(transactionsResponse.data);
+    setDashboard(normalizeDashboardData(dashboardResponse.data));
+    setAccounts((accountsResponse.data || []).map(normalizeAccountData));
+    setCategories((categoriesResponse.data || []).map(normalizeCategoryData));
+    setTransactions((transactionsResponse.data || []).map(normalizeTransactionData));
   }, []);
 
   const resetAuthState = React.useCallback(() => {
@@ -357,8 +413,16 @@ function App() {
 
   const handleSubmitCategory = async (event) => {
     event.preventDefault();
+    const categoryName = form.categoryName.trim();
+
+    if (!categoryName) {
+      setError('Preencha Nome da categoria antes de salvar.');
+      return;
+    }
+
+    setError('');
     const payload = {
-      name: form.categoryName,
+      name: categoryName,
       type: form.categoryType,
       color: form.categoryColor
     };
@@ -402,8 +466,8 @@ function App() {
         ...payload
       };
       const nextTransactions = [nextTransaction, ...transactions];
-      setTransactions(nextTransactions);
-      setDashboard(sumDashboardData(nextTransactions, accounts, categories));
+      setTransactions(nextTransactions.map(normalizeTransactionData));
+      setDashboard(normalizeDashboardData(sumDashboardData(nextTransactions, accounts, categories)));
       setForm((current) => ({ ...current, transactionDescription: '', transactionAmount: '' }));
       return;
     }
@@ -420,7 +484,7 @@ function App() {
   const columns = {
     accounts: [
       { key: 'name', label: 'Nome' },
-      { key: 'type', label: 'Tipo' },
+      { key: 'type', label: 'Tipo', render: (row) => formatAccountType(row.type) },
       { key: 'institution', label: 'Instituicao' },
       {
         key: 'currentBalance',
@@ -430,13 +494,21 @@ function App() {
     ],
     categories: [
       { key: 'name', label: 'Nome' },
-      { key: 'type', label: 'Tipo' },
-      { key: 'color', label: 'Cor' },
+      { key: 'type', label: 'Tipo', render: (row) => formatMovementType(row.type) },
+      {
+        key: 'color',
+        label: 'Cor',
+        render: (row) => (
+          <span className="color-swatch" title="Cor cadastrada" aria-label="Cor cadastrada">
+            <span className="color-swatch__chip" style={{ backgroundColor: row.color }} aria-hidden="true" />
+          </span>
+        )
+      },
       { key: 'active', label: 'Ativa', render: (row) => (row.active ? 'Sim' : 'Nao') }
     ],
     transactions: [
       { key: 'description', label: 'Descricao' },
-      { key: 'type', label: 'Tipo' },
+      { key: 'type', label: 'Tipo', render: (row) => formatMovementType(row.type) },
       {
         key: 'amount',
         label: 'Valor',
@@ -482,8 +554,8 @@ function App() {
             label: 'Tipo',
             type: 'select',
             options: [
-              { value: 'income', label: 'Receita' },
-              { value: 'expense', label: 'Despesa' }
+              { value: 'receita', label: 'Receita' },
+              { value: 'despesa', label: 'Despesa' }
             ]
           },
           { name: 'categoryColor', label: 'Cor', type: 'color' }
@@ -506,8 +578,8 @@ function App() {
             label: 'Tipo',
             type: 'select',
             options: [
-              { value: 'income', label: 'Receita' },
-              { value: 'expense', label: 'Despesa' }
+              { value: 'receita', label: 'Receita' },
+              { value: 'despesa', label: 'Despesa' }
             ]
           },
           { name: 'transactionAccountId', label: 'Conta ID', type: 'number', min: 1 },
@@ -536,21 +608,21 @@ function App() {
           />
           <MetricCard
             label="Receitas"
-            value={Number(dashboard.income || 0).toLocaleString('pt-BR', {
+            value={Number(dashboard.receita || 0).toLocaleString('pt-BR', {
               style: 'currency',
               currency: 'BRL'
             })}
             hint="Valores positivos do periodo"
-            tone="income"
+            tone="receita"
           />
           <MetricCard
             label="Despesas"
-            value={Number(dashboard.expense || 0).toLocaleString('pt-BR', {
+            value={Number(dashboard.despesa || 0).toLocaleString('pt-BR', {
               style: 'currency',
               currency: 'BRL'
             })}
             hint="Saidas do periodo"
-            tone="expense"
+            tone="despesa"
           />
           <MetricCard
             label="Lancamentos"
