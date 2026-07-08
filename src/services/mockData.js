@@ -11,7 +11,7 @@
       description: 'Pagamento cliente',
       amount: 4200,
       type: 'receita',
-      status: 'posted',
+      status: 'efetivado',
       transactionDate: new Date().toISOString(),
       accountId: 1,
       categoryId: 1
@@ -37,7 +37,7 @@ export const mockTransactions = [
     description: 'Mensalidade cliente A',
     amount: 4200,
     type: 'receita',
-    status: 'posted',
+    status: 'efetivado',
     transactionDate: new Date().toISOString(),
     accountId: 1,
     categoryId: 1
@@ -47,7 +47,7 @@ export const mockTransactions = [
     description: 'Internet corporativa',
     amount: 180,
     type: 'despesa',
-    status: 'posted',
+    status: 'efetivado',
     transactionDate: new Date().toISOString(),
     accountId: 1,
     categoryId: 2

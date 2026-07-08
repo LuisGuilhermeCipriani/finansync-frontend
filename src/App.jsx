@@ -52,8 +52,8 @@ const emptyForm = {
   transactionDescription: '',
   transactionAmount: '',
   transactionType: 'despesa',
-  transactionAccountId: '1',
-  transactionCategoryId: '2'
+  transactionAccountId: '',
+  transactionCategoryId: ''
 };
 
 const emptyAuthForm = {
@@ -140,8 +140,24 @@ function normalizeCategoryData(item) {
 function normalizeTransactionData(item) {
   return {
     ...item,
-    type: normalizeMovementType(item.type)
+    type: normalizeMovementType(item.type),
+    status: normalizeTransactionStatus(item.status)
   };
+}
+
+function normalizeTransactionStatus(value) {
+  const normalized = String(value || '').toLowerCase();
+
+  if (normalized === 'posted' || normalized === 'efetivado') {
+    return 'efetivado';
+  }
+
+  return normalized ? normalized : 'efetivado';
+}
+
+function formatStatus(value) {
+  const normalized = normalizeTransactionStatus(value);
+  return normalized.charAt(0).toUpperCase() + normalized.slice(1);
 }
 
 function App() {
@@ -371,6 +387,36 @@ function App() {
     setForm((current) => ({ ...current, [name]: value }));
   };
 
+  React.useEffect(() => {
+    if (accounts.length > 0) {
+      setForm((current) => {
+        const hasSelectedAccount = accounts.some((account) => String(account.id) === String(current.transactionAccountId));
+        if (hasSelectedAccount) {
+          return current;
+        }
+
+        return {
+          ...current,
+          transactionAccountId: String(accounts[0].id)
+        };
+      });
+    }
+
+    if (categories.length > 0) {
+      setForm((current) => {
+        const hasSelectedCategory = categories.some((category) => String(category.id) === String(current.transactionCategoryId));
+        if (hasSelectedCategory) {
+          return current;
+        }
+
+        return {
+          ...current,
+          transactionCategoryId: String(categories[0].id)
+        };
+      });
+    }
+  }, [accounts, categories]);
+
   const handleSubmitAccount = async (event) => {
     event.preventDefault();
     const accountName = form.accountName.trim();
@@ -450,8 +496,16 @@ function App() {
 
   const handleSubmitTransaction = async (event) => {
     event.preventDefault();
+    const transactionDescription = form.transactionDescription.trim();
+
+    if (!transactionDescription) {
+      setError('Preencha Descricao antes de salvar.');
+      return;
+    }
+
+    setError('');
     const payload = {
-      description: form.transactionDescription,
+      description: transactionDescription,
       amount: Number(form.transactionAmount || 0),
       type: form.transactionType,
       accountId: Number(form.transactionAccountId),
@@ -461,7 +515,7 @@ function App() {
     if (sessionMode === 'demo') {
       const nextTransaction = {
         id: Date.now(),
-        status: 'posted',
+        status: 'efetivado',
         transactionDate: new Date().toISOString(),
         ...payload
       };
@@ -510,13 +564,33 @@ function App() {
       { key: 'description', label: 'Descricao' },
       { key: 'type', label: 'Tipo', render: (row) => formatMovementType(row.type) },
       {
+        key: 'accountId',
+        label: 'Conta',
+        render: (row) => accounts.find((item) => String(item.id) === String(row.accountId))?.name || `Conta ${row.accountId}`
+      },
+      {
+        key: 'categoryId',
+        label: 'Categoria',
+        render: (row) =>
+          categories.find((item) => String(item.id) === String(row.categoryId))?.name || `Categoria ${row.categoryId}`
+      },
+      {
         key: 'amount',
         label: 'Valor',
         render: (row) => Number(row.amount || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
       },
-      { key: 'status', label: 'Status' }
+      { key: 'status', label: 'Status', render: (row) => formatStatus(row.status) }
     ]
   };
+
+  const transactionAccountOptions = accounts.map((account) => ({
+    value: String(account.id),
+    label: account.name
+  }));
+  const transactionCategoryOptions = categories.map((category) => ({
+    value: String(category.id),
+    label: category.name
+  }));
 
   const forms = {
     contas: (
@@ -582,8 +656,8 @@ function App() {
               { value: 'despesa', label: 'Despesa' }
             ]
           },
-          { name: 'transactionAccountId', label: 'Conta ID', type: 'number', min: 1 },
-          { name: 'transactionCategoryId', label: 'Categoria ID', type: 'number', min: 1 }
+          { name: 'transactionAccountId', label: 'Conta', type: 'select', options: transactionAccountOptions },
+          { name: 'transactionCategoryId', label: 'Categoria', type: 'select', options: transactionCategoryOptions }
         ]}
         values={form}
         onChange={handleChange}
