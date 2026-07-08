@@ -1,4 +1,9 @@
-﻿import React from 'react';
+import React from 'react';
+
+function formatCurrency(value) {
+  const cents = Number(String(value ?? '').replace(/\D/g, '')) || 0;
+  return cents.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+}
 
 export default function QuickForm({ title, description, fields, values, onChange, onSubmit, submitLabel }) {
   return (
@@ -24,6 +29,23 @@ export default function QuickForm({ title, description, fields, values, onChange
                   );
                 })}
               </select>
+            ) : field.type === 'currency' ? (
+              <input
+                type="text"
+                name={field.name}
+                value={formatCurrency(values[field.name])}
+                onChange={(event) => {
+                  const nextValue = String(event.target.value).replace(/\D/g, '');
+                  onChange({
+                    target: {
+                      name: field.name,
+                      value: nextValue || '0'
+                    }
+                  });
+                }}
+                inputMode="numeric"
+                placeholder={field.placeholder || 'R$ 0,00'}
+              />
             ) : (
               <input
                 type={field.type || 'text'}

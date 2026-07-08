@@ -45,7 +45,7 @@ const emptyForm = {
   accountName: '',
   accountType: 'corrente',
   accountInstitution: '',
-  accountBalance: '',
+  accountBalance: '0',
   categoryName: '',
   categoryType: 'expense',
   categoryColor: '#2563eb',
@@ -80,6 +80,14 @@ function sumDashboardData(transactions, accounts, categories) {
     totalTransactions: transactions.length,
     recentTransactions: transactions.slice(0, 5)
   };
+}
+
+function formatAccountType(value) {
+  return value === 'poupanca' ? 'Poupança' : 'Corrente';
+}
+
+function parseCurrencyCents(value) {
+  return Number(String(value ?? '').replace(/\D/g, '')) || 0;
 }
 
 function App() {
@@ -309,11 +317,20 @@ function App() {
 
   const handleSubmitAccount = async (event) => {
     event.preventDefault();
+    const accountName = form.accountName.trim();
+    const accountInstitution = form.accountInstitution.trim();
+
+    if (!accountName || !accountInstitution) {
+      setError('Preencha Nome da conta e Instituicao antes de salvar.');
+      return;
+    }
+
+    setError('');
     const payload = {
-      name: form.accountName,
-      type: form.accountType,
-      institution: form.accountInstitution,
-      initialBalance: Number(form.accountBalance || 0)
+      name: accountName,
+      type: formatAccountType(form.accountType),
+      institution: accountInstitution,
+      initialBalance: parseCurrencyCents(form.accountBalance) / 100
     };
 
     if (sessionMode === 'demo') {
@@ -325,14 +342,14 @@ function App() {
       };
       setAccounts((current) => [nextAccount, ...current]);
       setDashboard((current) => ({ ...current, accounts: current.accounts + 1 }));
-      setForm((current) => ({ ...current, accountName: '', accountInstitution: '', accountBalance: '' }));
+      setForm((current) => ({ ...current, accountName: '', accountInstitution: '', accountBalance: '0' }));
       return;
     }
 
     try {
       await createAccount(payload);
       await loadRemoteData();
-      setForm((current) => ({ ...current, accountName: '', accountInstitution: '', accountBalance: '' }));
+      setForm((current) => ({ ...current, accountName: '', accountInstitution: '', accountBalance: '0' }));
     } catch {
       setError('Nao foi possivel salvar a conta.');
     }
@@ -446,7 +463,7 @@ function App() {
             ]
           },
           { name: 'accountInstitution', label: 'Instituicao', placeholder: 'Banco X' },
-          { name: 'accountBalance', label: 'Saldo inicial', type: 'number', min: 0, step: '0.01' }
+          { name: 'accountBalance', label: 'Saldo inicial', type: 'currency', placeholder: 'R$ 0,00' }
         ]}
         values={form}
         onChange={handleChange}
