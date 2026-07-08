@@ -1,92 +1,92 @@
 const API_URL = import.meta.env.VITE_API_URL;
-let authToken = localStorage.getItem('finansync_token') || '';
+let tokenAutenticacao = localStorage.getItem('finansync_token') || '';
 
 export function setAuthToken(token) {
-  authToken = token || '';
+  tokenAutenticacao = token || '';
 }
 
 export function clearAuthToken() {
-  authToken = '';
+  tokenAutenticacao = '';
 }
 
-async function request(path, options = {}) {
+async function requisicao(path, options = {}) {
   if (!API_URL) {
-    throw new Error('VITE_API_URL deve ser definido no arquivo .env para usar a API');
+    throw new Error('VITE_API_URL deve ser definido no arquivo .env para usar a API.');
   }
 
-  const response = await fetch(`${API_URL}${path}`, {
+  const resposta = await fetch(`${API_URL}${path}`, {
     headers: {
       'Content-Type': 'application/json',
-      ...(authToken ? { Authorization: `Bearer ${authToken}` } : {}),
+      ...(tokenAutenticacao ? { Authorization: `Bearer ${tokenAutenticacao}` } : {}),
       ...(options.headers || {})
     },
     ...options
   });
 
-  if (!response.ok) {
-    const body = await response.json().catch(() => ({}));
-    throw new Error(body?.error?.message || 'Falha na comunicacao com a API');
+  if (!resposta.ok) {
+    const corpo = await resposta.json().catch(() => ({}));
+    throw new Error(corpo?.error?.message || 'Falha na comunicação com a API.');
   }
 
-  if (response.status === 204) {
+  if (resposta.status === 204) {
     return null;
   }
 
-  return response.json();
+  return resposta.json();
 }
 
 export async function getDashboard() {
-  return request('/dashboard');
+  return requisicao('/dashboard');
 }
 
 export async function getAccounts() {
-  return request('/accounts');
+  return requisicao('/accounts');
 }
 
 export async function getCategories() {
-  return request('/categories');
+  return requisicao('/categories');
 }
 
 export async function getTransactions(params = '') {
   const query = params ? `?${params}` : '';
-  return request(`/transactions${query}`);
+  return requisicao(`/transactions${query}`);
 }
 
 export async function createAccount(payload) {
-  return request('/accounts', {
+  return requisicao('/accounts', {
     method: 'POST',
     body: JSON.stringify(payload)
   });
 }
 
 export async function createCategory(payload) {
-  return request('/categories', {
+  return requisicao('/categories', {
     method: 'POST',
     body: JSON.stringify(payload)
   });
 }
 
 export async function createTransaction(payload) {
-  return request('/transactions', {
+  return requisicao('/transactions', {
     method: 'POST',
     body: JSON.stringify(payload)
   });
 }
 
 export async function register(payload) {
-  return request('/auth/register', {
+  return requisicao('/auth/register', {
     method: 'POST',
     body: JSON.stringify(payload)
   });
 }
 
 export async function login(payload) {
-  return request('/auth/login', {
+  return requisicao('/auth/login', {
     method: 'POST',
     body: JSON.stringify(payload)
   });
 }
 
 export async function getMe() {
-  return request('/auth/me');
+  return requisicao('/auth/me');
 }

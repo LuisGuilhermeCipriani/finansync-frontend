@@ -1,6 +1,6 @@
 import React from 'react';
 
-function formatCurrency(value) {
+function formatarMoeda(value) {
   const cents = Number(String(value ?? '').replace(/\D/g, '')) || 0;
   return cents.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 }
@@ -33,7 +33,7 @@ export default function QuickForm({ title, description, fields, values, onChange
               <input
                 type="text"
                 name={field.name}
-                value={formatCurrency(values[field.name])}
+                value={formatarMoeda(values[field.name])}
                 onChange={(event) => {
                   const nextValue = String(event.target.value).replace(/\D/g, '');
                   onChange({
