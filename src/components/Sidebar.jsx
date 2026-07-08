@@ -5,7 +5,7 @@ export default function Sidebar({ activeTab, onChangeTab }) {
     { id: 'dashboard', label: 'Painel' },
     { id: 'contas', label: 'Contas' },
     { id: 'categorias', label: 'Categorias' },
-    { id: 'lancamentos', label: 'Lancamentos' }
+    { id: 'lancamentos', label: 'Lançamentos' }
   ];
 
   return (

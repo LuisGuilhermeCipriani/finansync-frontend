@@ -38,7 +38,7 @@ const TAB_TITLES = {
   dashboard: 'Painel executivo',
   contas: 'Contas bancarias',
   categorias: 'Categorias financeiras',
-  lancamentos: 'Lancamentos e fluxo de caixa'
+  lancamentos: 'Lançamentos e fluxo de caixa'
 };
 
 const emptyForm = {
@@ -50,7 +50,7 @@ const emptyForm = {
   categoryType: 'despesa',
   categoryColor: '#2563eb',
   transactionDescription: '',
-  transactionAmount: '',
+  transactionAmount: '0',
   transactionType: 'despesa',
   transactionAccountId: '',
   transactionCategoryId: ''
@@ -258,13 +258,13 @@ function App() {
         try {
           await loadRemoteData();
         } catch {
-          setError('Nao foi possivel carregar os dados agora.');
+          setError('Não foi possível carregar os dados agora.');
         }
       } catch {
         localStorage.removeItem(STORAGE_KEY);
         clearAuthToken();
         resetAuthState();
-        setAuthNotice('Sua sessao expirou por seguranca. Entre novamente para continuar.');
+        setAuthNotice('Sua sessão expirou por segurança. Entre novamente para continuar.');
       } finally {
         setAuthLoading(false);
         setLoading(false);
@@ -294,7 +294,7 @@ function App() {
     }
 
     if (!trimmedEmail) {
-      setAuthError('Informe um e-mail valido.');
+      setAuthError('Informe um e-mail válido.');
       return;
     }
 
@@ -323,10 +323,10 @@ function App() {
       try {
         await loadRemoteData();
       } catch {
-        setError('Nao foi possivel carregar os dados agora.');
+        setError('Não foi possível carregar os dados agora.');
       }
     } catch (submissionError) {
-      setAuthError(submissionError.message || 'Nao foi possivel autenticar.');
+      setAuthError(submissionError.message || 'Não foi possível autenticar.');
     } finally {
       setAuthSubmitting(false);
       setLoading(false);
@@ -342,7 +342,7 @@ function App() {
     setAuthView('login');
     setAuthForm(emptyAuthForm);
     setAuthError('');
-    setAuthNotice('Voce entrou em modo demonstracao. Os dados desta tela nao alteram sua conta real.');
+    setAuthNotice('Você entrou em modo demonstração. Os dados desta tela não alteram sua conta real.');
     loadDemoData();
     setLoading(false);
   };
@@ -357,7 +357,7 @@ function App() {
     setAuthForm(emptyAuthForm);
     setActiveTab('dashboard');
     resetWorkspaceData();
-    setAuthNotice('Voce saiu com seguranca. Quando quiser, entre novamente.');
+    setAuthNotice('Você saiu com segurança. Quando quiser, entre novamente.');
     setLoading(false);
   };
 
@@ -376,7 +376,7 @@ function App() {
     try {
       await loadRemoteData();
     } catch {
-      setError('Nao foi possivel atualizar os dados agora.');
+      setError('Não foi possível atualizar os dados agora.');
     } finally {
       setRefreshing(false);
     }
@@ -423,7 +423,7 @@ function App() {
     const accountInstitution = form.accountInstitution.trim();
 
     if (!accountName || !accountInstitution) {
-      setError('Preencha Nome da conta e Instituicao antes de salvar.');
+      setError('Preencha Nome da conta e Instituição antes de salvar.');
       return;
     }
 
@@ -453,7 +453,7 @@ function App() {
       await loadRemoteData();
       setForm((current) => ({ ...current, accountName: '', accountInstitution: '', accountBalance: '0' }));
     } catch {
-      setError('Nao foi possivel salvar a conta.');
+      setError('Não foi possível salvar a conta.');
     }
   };
 
@@ -490,7 +490,7 @@ function App() {
       await loadRemoteData();
       setForm((current) => ({ ...current, categoryName: '' }));
     } catch {
-      setError('Nao foi possivel salvar a categoria.');
+      setError('Não foi possível salvar a categoria.');
     }
   };
 
@@ -499,7 +499,7 @@ function App() {
     const transactionDescription = form.transactionDescription.trim();
 
     if (!transactionDescription) {
-      setError('Preencha Descricao antes de salvar.');
+      setError('Preencha Descrição antes de salvar.');
       return;
     }
 
@@ -522,16 +522,16 @@ function App() {
       const nextTransactions = [nextTransaction, ...transactions];
       setTransactions(nextTransactions.map(normalizeTransactionData));
       setDashboard(normalizeDashboardData(sumDashboardData(nextTransactions, accounts, categories)));
-      setForm((current) => ({ ...current, transactionDescription: '', transactionAmount: '' }));
+      setForm((current) => ({ ...current, transactionDescription: '', transactionAmount: '0' }));
       return;
     }
 
     try {
       await createTransaction(payload);
-      setForm((current) => ({ ...current, transactionDescription: '', transactionAmount: '' }));
+      setForm((current) => ({ ...current, transactionDescription: '', transactionAmount: '0' }));
       await loadRemoteData();
     } catch {
-      setError('Nao foi possivel salvar o lancamento.');
+      setError('Não foi possível salvar o lançamento.');
     }
   };
 
@@ -539,7 +539,7 @@ function App() {
     accounts: [
       { key: 'name', label: 'Nome' },
       { key: 'type', label: 'Tipo', render: (row) => formatAccountType(row.type) },
-      { key: 'institution', label: 'Instituicao' },
+      { key: 'institution', label: 'Instituição' },
       {
         key: 'currentBalance',
         label: 'Saldo',
@@ -558,10 +558,10 @@ function App() {
           </span>
         )
       },
-      { key: 'active', label: 'Ativa', render: (row) => (row.active ? 'Sim' : 'Nao') }
+      { key: 'active', label: 'Ativa', render: (row) => (row.active ? 'Sim' : 'Não') }
     ],
     transactions: [
-      { key: 'description', label: 'Descricao' },
+      { key: 'description', label: 'Descrição' },
       { key: 'type', label: 'Tipo', render: (row) => formatMovementType(row.type) },
       {
         key: 'accountId',
@@ -608,7 +608,7 @@ function App() {
               { value: 'poupanca', label: 'Poupança' }
             ]
           },
-          { name: 'accountInstitution', label: 'Instituicao', placeholder: 'Banco X' },
+          { name: 'accountInstitution', label: 'Instituição', placeholder: 'Banco X' },
           { name: 'accountBalance', label: 'Saldo inicial', type: 'currency', placeholder: 'R$ 0,00' }
         ]}
         values={form}
@@ -643,10 +643,10 @@ function App() {
     lancamentos: (
       <QuickForm
         title="Novo lancamento"
-        description="Registre entradas e saidas do fluxo de caixa."
+        description="Registre entradas e saídas do fluxo de caixa."
         fields={[
-          { name: 'transactionDescription', label: 'Descricao', placeholder: 'Servicos prestados' },
-          { name: 'transactionAmount', label: 'Valor', type: 'number', min: 0, step: '0.01' },
+          { name: 'transactionDescription', label: 'Descrição', placeholder: 'Serviços prestados' },
+          { name: 'transactionAmount', label: 'Valor', type: 'currency', placeholder: 'R$ 0,00' },
           {
             name: 'transactionType',
             label: 'Tipo',
@@ -686,7 +686,7 @@ function App() {
               style: 'currency',
               currency: 'BRL'
             })}
-            hint="Valores positivos do periodo"
+            hint="Valores positivos do período"
             tone="receita"
           />
           <MetricCard
@@ -695,22 +695,22 @@ function App() {
               style: 'currency',
               currency: 'BRL'
             })}
-            hint="Saidas do periodo"
+            hint="Saídas do período"
             tone="despesa"
           />
           <MetricCard
-            label="Lancamentos"
+            label="Lançamentos"
             value={String(dashboard.totalTransactions || 0)}
-            hint="Movimentacoes registradas"
+            hint="Movimentações registradas"
             tone="default"
           />
         </div>
 
         <div className="two-columns">
           <SectionCard
-            title="Lancamentos recentes"
-            description="Visao rapida das ultimas movimentacoes."
-            action={<span className="section-card__chip">Ultimos 5</span>}
+            title="Lançamentos recentes"
+            description="Visão rápida das últimas movimentações."
+            action={<span className="section-card__chip">Últimos 5</span>}
           >
             <DataTable columns={columns.transactions} rows={dashboard.recentTransactions || []} />
           </SectionCard>
@@ -741,8 +741,8 @@ function App() {
       <div className="workspace-grid">
         <SectionCard
           title="Categorias cadastradas"
-          description="Classifique receitas e despesas sem complicacao."
-          action={<span className="section-card__chip">Organizacao</span>}
+          description="Classifique receitas e despesas sem complicação."
+          action={<span className="section-card__chip">Organização</span>}
         >
           <DataTable columns={columns.categories} rows={categories} />
         </SectionCard>
@@ -752,8 +752,8 @@ function App() {
     lancamentos: (
       <div className="workspace-grid">
         <SectionCard
-          title="Movimentacoes"
-          description="Controle o fluxo de caixa em uma tela unica."
+          title="Movimentações"
+          description="Controle o fluxo de caixa em uma tela única."
           action={<span className="section-card__chip">Fluxo completo</span>}
         >
           <DataTable columns={columns.transactions} rows={transactions} />
@@ -764,7 +764,7 @@ function App() {
   };
 
   if (authLoading) {
-    return <div className="loading loading--full">Carregando sessao...</div>;
+    return <div className="loading loading--full">Carregando sessão...</div>;
   }
 
   if (sessionMode === 'auth' && authStatus !== 'authenticated') {
@@ -796,9 +796,9 @@ function App() {
           onLogout={sessionMode === 'demo' ? null : handleLogout}
           modeLabel={
             sessionMode === 'demo'
-              ? 'Modo demonstracao'
+              ? 'Modo demonstração'
               : authStatus === 'authenticated'
-                ? 'Sessao autenticada'
+                ? 'Sessão autenticada'
                 : 'Acesso encerrado'
           }
         />
