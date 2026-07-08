@@ -51,7 +51,7 @@ export default function AuthCard({
 
           <p className="muted">{helperText}</p>
 
-          <div className="auth-pills" aria-label="Recursos da autenticacao">
+          <div className="auth-pills" aria-label="Recursos da autenticação">
             <span>{isRegister ? 'Cadastro guiado' : 'Login seguro'}</span>
             <span>{isRegister ? 'Painel liberado' : 'Retomada rápida'}</span>
             <span>Modo demonstração</span>

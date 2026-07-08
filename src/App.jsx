@@ -596,7 +596,7 @@ function App() {
     contas: (
       <QuickForm
         title="Nova conta"
-        description="Cadastre contas correntes, poupanca ou caixa."
+        description="Cadastre contas correntes, poupança ou caixa."
         fields={[
           { name: 'accountName', label: 'Nome da conta', placeholder: 'Conta principal' },
           {
@@ -804,7 +804,7 @@ function App() {
         />
 
         {error ? <div className="alert">{error}</div> : null}
-        {loading ? <div className="loading">Carregando experiencia financeira...</div> : mainContent[activeTab]}
+        {loading ? <div className="loading">Carregando experiência financeira...</div> : mainContent[activeTab]}
       </main>
     </div>
   );
