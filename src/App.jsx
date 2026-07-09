@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import AuthCard from './components/AuthCard';
 import Sidebar from './components/Sidebar';
 import Topbar from './components/Topbar';
@@ -12,10 +12,14 @@ import {
   getCategories,
   getTransactions,
   createAccount,
+  deleteAccount,
   createCategory,
+  updateCategory,
+  deleteCategory,
   createTransaction,
   login as loginUser,
   register as registerUser,
+  updateMe,
   getMe,
   setAuthToken,
   clearAuthToken
@@ -36,7 +40,7 @@ const emptyDashboard = {
 
 const TAB_TITLES = {
   dashboard: 'Painel executivo',
-  contas: 'Contas bancarias',
+  contas: 'Contas bancárias',
   categorias: 'Categorias financeiras',
   lancamentos: 'Lançamentos e fluxo de caixa'
 };
@@ -62,6 +66,13 @@ const emptyAuthForm = {
   password: ''
 };
 
+const emptyProfileForm = {
+  name: '',
+  email: '',
+  currentPassword: '',
+  newPassword: ''
+};
+
 function sumDashboardData(transactions, accounts, categories) {
   const receita = transactions
     .filter((item) => normalizarTipoMovimento(item.type) === 'receita')
@@ -71,12 +82,16 @@ function sumDashboardData(transactions, accounts, categories) {
     .filter((item) => normalizarTipoMovimento(item.type) === 'despesa')
     .reduce((sum, item) => sum + Number(item.amount || 0), 0);
 
+  const cashFlowBalance = receita - despesa;
+  const accountBalance = accounts.reduce((sum, account) => sum + Number(account.currentBalance || 0), 0);
+
   return {
     accounts: accounts.length,
     categories: categories.length,
     receita,
     despesa,
-    balance: receita - despesa,
+    cashFlowBalance,
+    balance: accountBalance,
     totalTransactions: transactions.length,
     recentTransactions: transactions.slice(0, 5)
   };
@@ -114,7 +129,8 @@ function normalizarDadosDashboard(data) {
     categories: Number(data?.categories || 0),
     receita: Number(data?.receita ?? data?.income ?? 0),
     despesa: Number(data?.despesa ?? data?.expense ?? 0),
-    balance: Number(data?.balance || 0),
+    balance: Number(data?.balance ?? data?.accountBalance ?? 0),
+    cashFlowBalance: Number(data?.cashFlowBalance ?? data?.flowBalance ?? 0),
     totalTransactions: Number(data?.totalTransactions ?? data?.total_transactions ?? 0),
     recentTransactions: (data?.recentTransactions || data?.recent_transactions || []).map((item) => ({
       ...item,
@@ -171,6 +187,10 @@ function App() {
   const [authError, setAuthError] = React.useState('');
   const [authNotice, setAuthNotice] = React.useState('');
   const [authForm, setAuthForm] = React.useState(emptyAuthForm);
+  const [profileOpen, setProfileOpen] = React.useState(false);
+  const [profileSubmitting, setProfileSubmitting] = React.useState(false);
+  const [profileError, setProfileError] = React.useState('');
+  const [profileForm, setProfileForm] = React.useState(emptyProfileForm);
   const [activeTab, setActiveTab] = React.useState('dashboard');
   const [loading, setLoading] = React.useState(true);
   const [refreshing, setRefreshing] = React.useState(false);
@@ -180,6 +200,25 @@ function App() {
   const [categories, setCategories] = React.useState(mockCategories);
   const [transactions, setTransactions] = React.useState(mockTransactions);
   const [form, setForm] = React.useState(emptyForm);
+  const [categoryEditingId, setCategoryEditingId] = React.useState(null);
+
+  React.useEffect(() => {
+    if (!error) {
+      return undefined;
+    }
+
+    const timer = window.setTimeout(() => {
+      setError('');
+    }, 5000);
+
+    return () => window.clearTimeout(timer);
+  }, [error]);
+
+  React.useEffect(() => {
+    if (error) {
+      setError('');
+    }
+  }, [activeTab]);
 
   const loadDemoData = React.useCallback(() => {
     const nextAccounts = mockAccounts.map(normalizarConta);
@@ -219,6 +258,10 @@ function App() {
     setAuthStatus(hasApi ? 'signedOut' : 'demo');
     setAuthView('login');
     setAuthForm(emptyAuthForm);
+    setProfileOpen(false);
+    setProfileSubmitting(false);
+    setProfileError('');
+    setProfileForm(emptyProfileForm);
     setAuthLoading(false);
     setAuthSubmitting(false);
     setAuthError('');
@@ -351,6 +394,10 @@ function App() {
     localStorage.removeItem(STORAGE_KEY);
     clearAuthToken();
     setAuthUser(null);
+    setProfileOpen(false);
+    setProfileSubmitting(false);
+    setProfileError('');
+    setProfileForm(emptyProfileForm);
     setSessionMode('auth');
     setAuthStatus('signedOut');
     setAuthView('login');
@@ -359,6 +406,86 @@ function App() {
     resetWorkspaceData();
     setAuthNotice('Você saiu com segurança. Quando quiser, entre novamente.');
     setLoading(false);
+  };
+
+  const handleOpenProfile = () => {
+    if (!authUser) {
+      return;
+    }
+
+    setProfileForm({
+      name: authUser.name || '',
+      email: authUser.email || '',
+      currentPassword: '',
+      newPassword: ''
+    });
+    setProfileError('');
+    setProfileOpen(true);
+  };
+
+  const handleCloseProfile = () => {
+    setProfileOpen(false);
+    setProfileSubmitting(false);
+    setProfileError('');
+    setProfileForm(emptyProfileForm);
+  };
+
+  const handleProfileChange = (event) => {
+    const { name, value } = event.target;
+    setProfileForm((current) => ({ ...current, [name]: value }));
+  };
+
+  const handleProfileSubmit = async (event) => {
+    event.preventDefault();
+    setProfileError('');
+
+    const name = profileForm.name.trim();
+    const email = profileForm.email.trim();
+    const currentPassword = profileForm.currentPassword.trim();
+    const newPassword = profileForm.newPassword.trim();
+
+    if (!name) {
+      setProfileError('Informe seu nome.');
+      return;
+    }
+
+    if (!email) {
+      setProfileError('Informe um e-mail válido.');
+      return;
+    }
+
+    if (!currentPassword) {
+      setProfileError('Informe sua senha atual.');
+      return;
+    }
+
+    if (newPassword && newPassword.length < 6) {
+      setProfileError('A nova senha deve ter no mínimo 6 caracteres.');
+      return;
+    }
+
+    setProfileSubmitting(true);
+
+    try {
+      const response = await updateMe({
+        name,
+        email,
+        currentPassword,
+        newPassword: newPassword || undefined
+      });
+      const { token, user } = response.data;
+
+      localStorage.setItem(STORAGE_KEY, token);
+      setAuthToken(token);
+      setAuthUser(user);
+      setProfileOpen(false);
+      setAuthNotice('Dados do usuário atualizados com sucesso.');
+      setProfileForm(emptyProfileForm);
+    } catch (updateError) {
+      setProfileError(updateError?.message || 'Não foi possível atualizar os dados do usuário.');
+    } finally {
+      setProfileSubmitting(false);
+    }
   };
 
   const handleRefresh = async () => {
@@ -386,6 +513,16 @@ function App() {
     const { name, value } = event.target;
     setForm((current) => ({ ...current, [name]: value }));
   };
+
+  const resetCategoryForm = React.useCallback(() => {
+    setForm((current) => ({
+      ...current,
+      categoryName: '',
+      categoryType: 'despesa',
+      categoryColor: '#2563eb'
+    }));
+    setCategoryEditingId(null);
+  }, []);
 
   React.useEffect(() => {
     if (accounts.length > 0) {
@@ -442,8 +579,15 @@ function App() {
         active: true,
         ...payload
       };
-      setAccounts((current) => [nextAccount, ...current]);
-      setDashboard((current) => ({ ...current, accounts: current.accounts + 1 }));
+      setAccounts((current) => {
+        const nextAccounts = [nextAccount, ...current];
+        setDashboard((dashboardCurrent) => ({
+          ...dashboardCurrent,
+          accounts: nextAccounts.length,
+          balance: nextAccounts.reduce((sum, account) => sum + Number(account.currentBalance || 0), 0)
+        }));
+        return nextAccounts;
+      });
       setForm((current) => ({ ...current, accountName: '', accountInstitution: '', accountBalance: '0' }));
       return;
     }
@@ -454,6 +598,33 @@ function App() {
       setForm((current) => ({ ...current, accountName: '', accountInstitution: '', accountBalance: '0' }));
     } catch {
       setError('Não foi possível salvar a conta.');
+    }
+  };
+
+  const handleDeleteAccount = async (account) => {
+    const confirmed = window.confirm(`Tem certeza que deseja excluir a conta "${account.name}"?`);
+    if (!confirmed) {
+      return;
+    }
+
+    if (sessionMode === 'demo') {
+      setAccounts((current) => {
+        const nextAccounts = current.filter((item) => String(item.id) !== String(account.id));
+        setDashboard((dashboardCurrent) => ({
+          ...dashboardCurrent,
+          accounts: nextAccounts.length,
+          balance: nextAccounts.reduce((sum, item) => sum + Number(item.currentBalance || 0), 0)
+        }));
+        return nextAccounts;
+      });
+      return;
+    }
+
+    try {
+      await deleteAccount(account.id);
+      await loadRemoteData();
+    } catch (deleteError) {
+      setError(deleteError?.message || 'Não foi possível excluir a conta.');
     }
   };
 
@@ -474,23 +645,87 @@ function App() {
     };
 
     if (sessionMode === 'demo') {
-      const nextCategory = {
-        id: Date.now(),
-        active: true,
-        ...payload
-      };
-      setCategories((current) => [nextCategory, ...current]);
-      setDashboard((current) => ({ ...current, categories: current.categories + 1 }));
-      setForm((current) => ({ ...current, categoryName: '' }));
+      if (categoryEditingId) {
+        setCategories((current) =>
+          current.map((category) =>
+            String(category.id) === String(categoryEditingId)
+              ? { ...category, ...payload }
+              : category
+          )
+        );
+      } else {
+        const nextCategory = {
+          id: Date.now(),
+          active: true,
+          ...payload
+        };
+        setCategories((current) => [nextCategory, ...current]);
+        setDashboard((current) => ({ ...current, categories: current.categories + 1 }));
+      }
+
+      resetCategoryForm();
       return;
     }
 
     try {
-      await createCategory(payload);
+      if (categoryEditingId) {
+        await updateCategory(categoryEditingId, payload);
+      } else {
+        await createCategory(payload);
+      }
       await loadRemoteData();
-      setForm((current) => ({ ...current, categoryName: '' }));
+      resetCategoryForm();
     } catch {
       setError('Não foi possível salvar a categoria.');
+    }
+  };
+
+  const handleEditCategory = (category) => {
+    setActiveTab('categorias');
+    setCategoryEditingId(category.id);
+    setForm((current) => ({
+      ...current,
+      categoryName: category.name || '',
+      categoryType: normalizarTipoMovimento(category.type),
+      categoryColor: category.color || '#2563eb'
+    }));
+  };
+
+  const handleCancelCategoryEdit = () => {
+    resetCategoryForm();
+  };
+
+  const handleDeleteCategory = async (category) => {
+    const confirmed = window.confirm(`Tem certeza que deseja excluir a categoria "${category.name}"?`);
+    if (!confirmed) {
+      return;
+    }
+
+    if (sessionMode === 'demo') {
+      const hasLinkedTransactions = transactions.some((item) => String(item.categoryId) === String(category.id));
+      if (hasLinkedTransactions) {
+        setError('Não é possível excluir esta categoria porque ela possui lançamentos vinculados.');
+        return;
+      }
+
+      setCategories((current) => {
+        const nextCategories = current.filter((item) => String(item.id) !== String(category.id));
+        setDashboard((dashboardCurrent) => ({
+          ...dashboardCurrent,
+          categories: nextCategories.length
+        }));
+        return nextCategories;
+      });
+      resetCategoryForm();
+      return;
+    }
+
+    try {
+      await deleteCategory(category.id);
+      await loadRemoteData();
+      resetCategoryForm();
+    } catch (deleteError) {
+      setError(deleteError?.message || 'Não foi possível excluir a categoria.');
     }
   };
 
@@ -519,9 +754,16 @@ function App() {
         transactionDate: new Date().toISOString(),
         ...payload
       };
+      const movementDelta = normalizarTipoMovimento(payload.type) === 'receita' ? Number(payload.amount || 0) : Number(payload.amount || 0) * -1;
+      const nextAccounts = accounts.map((account) =>
+        String(account.id) === String(payload.accountId)
+          ? { ...account, currentBalance: Number(account.currentBalance || 0) + movementDelta }
+          : account
+      );
       const nextTransactions = [nextTransaction, ...transactions];
+      setAccounts(nextAccounts);
       setTransactions(nextTransactions.map(normalizarLancamento));
-      setDashboard(normalizarDadosDashboard(sumDashboardData(nextTransactions, accounts, categories)));
+      setDashboard(normalizarDadosDashboard(sumDashboardData(nextTransactions, nextAccounts, categories)));
       setForm((current) => ({ ...current, transactionDescription: '', transactionAmount: '0' }));
       return;
     }
@@ -544,6 +786,19 @@ function App() {
         key: 'currentBalance',
         label: 'Saldo',
         render: (row) => Number(row.currentBalance || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
+      },
+      {
+        key: 'actions',
+        label: 'Ações',
+        render: (row) => (
+          <button
+            type="button"
+            className="button button--ghost table-action-button"
+            onClick={() => handleDeleteAccount(row)}
+          >
+            Excluir
+          </button>
+        )
       }
     ],
     categories: [
@@ -558,7 +813,29 @@ function App() {
           </span>
         )
       },
-      { key: 'active', label: 'Ativa', render: (row) => (row.active ? 'Sim' : 'Não') }
+      { key: 'active', label: 'Ativa', render: (row) => (row.active ? 'Sim' : 'Não') },
+      {
+        key: 'actions',
+        label: 'Ações',
+        render: (row) => (
+          <div className="table-actions">
+            <button
+              type="button"
+              className="button button--ghost table-action-button"
+              onClick={() => handleEditCategory(row)}
+            >
+              Editar
+            </button>
+            <button
+              type="button"
+              className="button button--ghost table-action-button"
+              onClick={() => handleDeleteCategory(row)}
+            >
+              Excluir
+            </button>
+          </div>
+        )
+      }
     ],
     transactions: [
       { key: 'description', label: 'Descrição' },
@@ -618,31 +895,38 @@ function App() {
       />
     ),
     categorias: (
-      <QuickForm
-        title="Nova categoria"
-        description="Organize receitas e despesas com cores claras."
-        fields={[
-          { name: 'categoryName', label: 'Nome da categoria', placeholder: 'Aluguel' },
-          {
-            name: 'categoryType',
-            label: 'Tipo',
-            type: 'select',
-            options: [
-              { value: 'receita', label: 'Receita' },
-              { value: 'despesa', label: 'Despesa' }
-            ]
-          },
-          { name: 'categoryColor', label: 'Cor', type: 'color' }
-        ]}
-        values={form}
-        onChange={handleChange}
-        onSubmit={handleSubmitCategory}
-        submitLabel="Salvar categoria"
-      />
+      <div>
+        <QuickForm
+          title={categoryEditingId ? 'Editar categoria' : 'Nova categoria'}
+          description={categoryEditingId ? 'Os campos abaixo mostram a categoria selecionada para edição.' : 'Organize receitas e despesas com cores claras.'}
+          fields={[
+            { name: 'categoryName', label: 'Nome da categoria', placeholder: 'Aluguel' },
+            {
+              name: 'categoryType',
+              label: 'Tipo',
+              type: 'select',
+              options: [
+                { value: 'receita', label: 'Receita' },
+                { value: 'despesa', label: 'Despesa' }
+              ]
+            },
+            { name: 'categoryColor', label: 'Cor', type: 'color' }
+          ]}
+          values={form}
+          onChange={handleChange}
+          onSubmit={handleSubmitCategory}
+          submitLabel={categoryEditingId ? 'Salvar alterações' : 'Salvar categoria'}
+        />
+        {categoryEditingId ? (
+          <button type="button" className="button button--ghost" onClick={handleCancelCategoryEdit}>
+            Cancelar edição
+          </button>
+        ) : null}
+      </div>
     ),
     lancamentos: (
       <QuickForm
-        title="Novo lancamento"
+        title="Novo lançamento"
         description="Registre entradas e saídas do fluxo de caixa."
         fields={[
           { name: 'transactionDescription', label: 'Descrição', placeholder: 'Serviços prestados' },
@@ -662,7 +946,7 @@ function App() {
         values={form}
         onChange={handleChange}
         onSubmit={handleSubmitTransaction}
-        submitLabel="Salvar lancamento"
+        submitLabel="Salvar lançamento"
       />
     )
   };
@@ -677,7 +961,7 @@ function App() {
               style: 'currency',
               currency: 'BRL'
             })}
-            hint="Consolidado de receitas e despesas"
+            hint="Soma dos saldos das contas"
             tone="balance"
           />
           <MetricCard
@@ -793,6 +1077,7 @@ function App() {
           onRefresh={handleRefresh}
           loading={refreshing}
           user={authUser}
+          onEditUser={handleOpenProfile}
           onLogout={sessionMode === 'demo' ? null : handleLogout}
           modeLabel={
             sessionMode === 'demo'
@@ -803,6 +1088,72 @@ function App() {
           }
         />
 
+        {profileOpen ? (
+          <div className="profile-modal" role="dialog" aria-modal="true" aria-labelledby="profile-modal-title">
+            <div className="profile-modal__backdrop" onClick={handleCloseProfile} aria-hidden="true" />
+            <div className="profile-modal__dialog">
+              <div className="profile-modal__header">
+                <div>
+                  <p className="eyebrow">Perfil do usuário</p>
+                  <h2 id="profile-modal-title">Atualizar dados</h2>
+                </div>
+                <button type="button" className="button button--ghost" onClick={handleCloseProfile}>
+                  Fechar
+                </button>
+              </div>
+
+              <form className="profile-form" onSubmit={handleProfileSubmit}>
+                <label>
+                  <span>Nome</span>
+                  <input name="name" value={profileForm.name} onChange={handleProfileChange} />
+                </label>
+
+                <label>
+                  <span>E-mail</span>
+                  <input name="email" type="email" value={profileForm.email} onChange={handleProfileChange} />
+                </label>
+
+                <label>
+                  <span>Senha atual</span>
+                  <input
+                    name="currentPassword"
+                    type="password"
+                    value={profileForm.currentPassword}
+                    onChange={handleProfileChange}
+                    placeholder="Digite sua senha atual"
+                  />
+                </label>
+
+                <label>
+                  <span>Nova senha</span>
+                  <input
+                    name="newPassword"
+                    type="password"
+                    value={profileForm.newPassword}
+                    onChange={handleProfileChange}
+                    placeholder="Opcional"
+                  />
+                </label>
+
+                <p className="auth-hint">
+                  Para confirmar a alteração, informe a senha atual. A nova senha é opcional.
+                </p>
+
+                {profileError ? <div className="auth-banner auth-banner--error">{profileError}</div> : null}
+
+                <div className="profile-modal__actions">
+                  <button type="button" className="button button--ghost" onClick={handleCloseProfile}>
+                    Cancelar
+                  </button>
+                  <button type="submit" className="button" disabled={profileSubmitting}>
+                    {profileSubmitting ? 'Salvando...' : 'Salvar dados'}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        ) : null}
+
         {error ? <div className="alert">{error}</div> : null}
         {loading ? <div className="loading">Carregando experiência financeira...</div> : mainContent[activeTab]}
       </main>
@@ -811,3 +1162,7 @@ function App() {
 }
 
 export default App;
+
+
+
+

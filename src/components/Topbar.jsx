@@ -1,6 +1,6 @@
-import React from 'react';
+﻿import React from 'react';
 
-export default function Topbar({ title, subtitle, onRefresh, loading, user, onLogout, modeLabel }) {
+export default function Topbar({ title, subtitle, onRefresh, loading, user, onEditUser, onLogout, modeLabel }) {
   return (
     <header className="topbar">
       <div className="topbar__content">
@@ -20,6 +20,9 @@ export default function Topbar({ title, subtitle, onRefresh, loading, user, onLo
               <strong>{user.name}</strong>
               <span>{user.email}</span>
             </div>
+            <button type="button" className="button button--ghost" onClick={onEditUser}>
+              Editar usuário
+            </button>
             <button type="button" className="button button--ghost" onClick={onLogout}>
               Sair
             </button>
@@ -27,9 +30,10 @@ export default function Topbar({ title, subtitle, onRefresh, loading, user, onLo
         ) : null}
 
         <button type="button" className="button button--ghost" onClick={onRefresh} disabled={loading}>
-          {loading ? 'Atualizando...' : 'Atualizar dados'}
+          {loading ? 'Recarregando...' : 'Recarregar dados'}
         </button>
       </div>
     </header>
   );
 }
+

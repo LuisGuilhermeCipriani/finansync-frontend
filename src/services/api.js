@@ -1,4 +1,4 @@
-const API_URL = import.meta.env.VITE_API_URL;
+﻿const API_URL = import.meta.env.VITE_API_URL;
 let tokenAutenticacao = localStorage.getItem('finansync_token') || '';
 
 export function setAuthToken(token) {
@@ -59,10 +59,29 @@ export async function createAccount(payload) {
   });
 }
 
+export async function deleteAccount(id) {
+  return requisicao(`/accounts/${id}`, {
+    method: 'DELETE'
+  });
+}
+
 export async function createCategory(payload) {
   return requisicao('/categories', {
     method: 'POST',
     body: JSON.stringify(payload)
+  });
+}
+
+export async function updateCategory(id, payload) {
+  return requisicao(`/categories/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(payload)
+  });
+}
+
+export async function deleteCategory(id) {
+  return requisicao(`/categories/${id}`, {
+    method: 'DELETE'
   });
 }
 
@@ -87,6 +106,14 @@ export async function login(payload) {
   });
 }
 
+export async function updateMe(payload) {
+  return requisicao('/auth/me', {
+    method: 'PUT',
+    body: JSON.stringify(payload)
+  });
+}
+
 export async function getMe() {
   return requisicao('/auth/me');
 }
+

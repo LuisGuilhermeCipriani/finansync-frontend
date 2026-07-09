@@ -3,7 +3,8 @@
   categories: 4,
   receita: 15400,
   despesa: 9275,
-  balance: 6125,
+  balance: 20250.5,
+  cashFlowBalance: 6125,
   totalTransactions: 12,
   recentTransactions: [
     {
