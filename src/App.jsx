@@ -790,6 +790,11 @@ function App() {
       return;
     }
 
+    if (!String(form.transactionCategoryId || '').trim()) {
+      setError('Primeiro é necessário criar uma categoria para salvar o lançamento');
+      return;
+    }
+
     setError('');
     const payload = {
       description: transactionDescription,
@@ -951,7 +956,7 @@ function App() {
       <div>
         <QuickForm
           title={categoryEditingId ? 'Editar categoria' : 'Nova categoria'}
-          description={categoryEditingId ? 'Os campos abaixo mostram a categoria selecionada para edição.' : 'Organize receitas e despesas com cores claras'}
+          description={categoryEditingId ? 'Os campos abaixo mostram a categoria selecionada para edição' : 'Organize receitas e despesas com cores desejadas'}
           fields={[
             { name: 'categoryName', label: 'Nome da categoria', placeholder: 'Aluguel' },
             {
@@ -980,7 +985,7 @@ function App() {
     lancamentos: (
       <QuickForm
         title="Novo lançamento"
-        description="Registre entradas e saídas do fluxo de caixa"
+        description="Controle o fluxo de caixa em uma tela única"
         fields={[
           { name: 'transactionDescription', label: 'Descrição', placeholder: 'Serviços prestados' },
           { name: 'transactionAmount', label: 'Valor', type: 'currency', placeholder: 'R$ 0,00' },
@@ -1078,7 +1083,7 @@ function App() {
       <div className="workspace-grid">
         <SectionCard
           title="Categorias cadastradas"
-          description="Classifique receitas e despesas sem complicação"
+          description="Classificação de receitas e despesas"
           action={<span className="section-card__chip">Organização</span>}
         >
           <DataTable columns={columns.categories} rows={categories} />
@@ -1090,7 +1095,7 @@ function App() {
       <div className="workspace-grid">
         <SectionCard
           title="Movimentações"
-          description="Controle o fluxo de caixa em uma tela única"
+          description="Controle do fluxo de caixa"
           action={<span className="section-card__chip">Fluxo completo</span>}
         >
           <DataTable columns={columns.transactions} rows={transactions} />
@@ -1126,7 +1131,7 @@ function App() {
       <main className="app-content">
         <Topbar
           title={TAB_TITLES[activeTab]}
-          subtitle="Interface clara, responsiva e pronta para trabalhar com a API protegida"
+          subtitle=""
           onRefresh={handleRefresh}
           loading={refreshing}
           user={authUser}
@@ -1191,7 +1196,7 @@ function App() {
                 </label>
 
                 <p className="auth-hint">
-                  Para confirmar a alteração, informe a senha atual. A nova senha é opcional.
+                  Para confirmar a alteração, informe a senha atual. A nova senha é opcional
                 </p>
 
                 {profileError ? <div className="auth-banner auth-banner--error">{profileError}</div> : null}
@@ -1217,6 +1222,3 @@ function App() {
 }
 
 export default App;
-
-
-
