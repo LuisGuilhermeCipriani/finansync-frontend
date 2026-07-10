@@ -390,6 +390,24 @@ function App() {
     setLoading(false);
   };
 
+  const handleReturnToLogin = () => {
+    localStorage.removeItem(STORAGE_KEY);
+    clearAuthToken();
+    setAuthUser(null);
+    setProfileOpen(false);
+    setProfileSubmitting(false);
+    setProfileError('');
+    setProfileForm(emptyProfileForm);
+    setSessionMode('auth');
+    setAuthStatus('signedOut');
+    setAuthView('login');
+    setAuthForm(emptyAuthForm);
+    setActiveTab('dashboard');
+    resetWorkspaceData();
+    setAuthNotice('Você saiu do modo demonstração. Agora pode escolher outra forma de entrar.');
+    setLoading(false);
+  };
+
   const handleLogout = () => {
     localStorage.removeItem(STORAGE_KEY);
     clearAuthToken();
@@ -1078,7 +1096,9 @@ function App() {
           loading={refreshing}
           user={authUser}
           onEditUser={handleOpenProfile}
-          onLogout={sessionMode === 'demo' ? null : handleLogout}
+          onLogout={sessionMode === 'demo' ? handleReturnToLogin : handleLogout}
+          onSessionAction={sessionMode === 'demo' ? handleReturnToLogin : null}
+          sessionActionLabel="Voltar ao login"
           modeLabel={
             sessionMode === 'demo'
               ? 'Modo demonstração'

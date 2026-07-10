@@ -1,6 +1,17 @@
 ﻿import React from 'react';
 
-export default function Topbar({ title, subtitle, onRefresh, loading, user, onEditUser, onLogout, modeLabel }) {
+export default function Topbar({
+  title,
+  subtitle,
+  onRefresh,
+  loading,
+  user,
+  onEditUser,
+  onLogout,
+  onSessionAction,
+  sessionActionLabel,
+  modeLabel
+}) {
   return (
     <header className="topbar">
       <div className="topbar__content">
@@ -27,6 +38,10 @@ export default function Topbar({ title, subtitle, onRefresh, loading, user, onEd
               Sair
             </button>
           </div>
+        ) : onSessionAction ? (
+          <button type="button" className="button button--ghost" onClick={onSessionAction}>
+            {sessionActionLabel || 'Voltar ao login'}
+          </button>
         ) : null}
 
         <button type="button" className="button button--ghost" onClick={onRefresh} disabled={loading}>
@@ -36,4 +51,3 @@ export default function Topbar({ title, subtitle, onRefresh, loading, user, onEd
     </header>
   );
 }
-
