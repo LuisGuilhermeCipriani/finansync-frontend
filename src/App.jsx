@@ -790,6 +790,11 @@ function App() {
       return;
     }
 
+    if (categories.length === 0) {
+      setError('Por favor, crie uma categoria primeiro');
+      return;
+    }
+
     if (!String(form.transactionCategoryId || '').trim()) {
       setError('Por favor, crie uma categoria');
       return;
