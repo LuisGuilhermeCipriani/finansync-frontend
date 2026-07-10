@@ -611,7 +611,7 @@ function App() {
       name: accountName,
       type: formatarTipoConta(form.accountType),
       institution: accountInstitution,
-      initialBalance: parseCurrencyCents(form.accountBalance) / 100
+      initialBalance: Number(form.accountBalance || 0)
     };
 
     if (sessionMode === 'demo') {

@@ -1,11 +1,17 @@
 import React from 'react';
 
 function formatarMoeda(value) {
-  const cents = Number(String(value ?? '').replace(/\D/g, '')) || 0;
-  return cents.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+  if (value === '' || value === null || value === undefined) {
+    return '';
+  }
+
+  const amount = Number(String(value ?? '').replace(/\D/g, '')) || 0;
+  return amount.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 }
 
 export default function QuickForm({ title, description, fields, values, onChange, onSubmit, submitLabel }) {
+  const [focusedCurrencyField, setFocusedCurrencyField] = React.useState('');
+
   return (
     <form className="quick-form" onSubmit={onSubmit}>
       <div className="quick-form__intro">
@@ -33,16 +39,29 @@ export default function QuickForm({ title, description, fields, values, onChange
               <input
                 type="text"
                 name={field.name}
-                value={formatarMoeda(values[field.name])}
+                value={focusedCurrencyField === field.name ? String(values[field.name] ?? '') : formatarMoeda(values[field.name])}
                 onChange={(event) => {
                   const nextValue = String(event.target.value).replace(/\D/g, '');
                   onChange({
                     target: {
                       name: field.name,
-                      value: nextValue || '0'
+                      value: nextValue
                     }
                   });
                 }}
+                onFocus={() => {
+                  setFocusedCurrencyField(field.name);
+
+                  if (String(values[field.name] ?? '') === '0') {
+                    onChange({
+                      target: {
+                        name: field.name,
+                        value: ''
+                      }
+                    });
+                  }
+                }}
+                onBlur={() => setFocusedCurrencyField('')}
                 inputMode="numeric"
                 placeholder={field.placeholder || 'R$ 0,00'}
               />
