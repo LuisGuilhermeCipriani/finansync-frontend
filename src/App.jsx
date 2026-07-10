@@ -220,6 +220,18 @@ function App() {
     }
   }, [activeTab]);
 
+  React.useEffect(() => {
+    if ('scrollRestoration' in window.history) {
+      window.history.scrollRestoration = 'manual';
+    }
+  }, []);
+
+  React.useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+  }, [activeTab, authView, sessionMode, authStatus]);
+
   const loadDemoData = React.useCallback(() => {
     const nextAccounts = mockAccounts.map(normalizarConta);
     const nextCategories = mockCategories.map(normalizarCategoria);
