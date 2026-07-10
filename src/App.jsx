@@ -791,7 +791,7 @@ function App() {
     }
 
     if (!String(form.transactionCategoryId || '').trim()) {
-      setError('Primeiro é necessário criar uma categoria para salvar o lançamento');
+      setError('Por favor, crie uma categoria');
       return;
     }
 
