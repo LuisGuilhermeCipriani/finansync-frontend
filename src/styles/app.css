@@ -55,7 +55,8 @@
   flex-direction: column;
   justify-content: center;
   align-self: center;
-  line-height: 1.05;
+  line-height: 1.02;
+  transform: translateY(2px);
 }
 
 .brand span,
