@@ -50,6 +50,10 @@
   display: block;
 }
 
+.brand strong {
+  margin-bottom: 5px;
+}
+
 .brand > div {
   display: flex;
   flex-direction: column;
@@ -810,6 +814,18 @@ tbody tr {
   background: rgba(15, 23, 42, 0.72);
 }
 
+.topbar__actions {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.topbar__logout {
+  margin-left: auto;
+}
+
 .topbar__user strong,
 .topbar__user span,
 .topbar__mode {
@@ -888,6 +904,15 @@ tbody tr {
   .topbar__user {
     width: 100%;
     justify-content: space-between;
+  }
+
+  .topbar__actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .topbar__logout {
+    margin-left: 0;
   }
 
   .auth-password {
