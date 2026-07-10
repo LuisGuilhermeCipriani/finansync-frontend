@@ -116,7 +116,17 @@ function formatarTipoMovimento(value) {
 }
 
 function formatarTipoConta(value) {
-  return value === 'poupanca' ? 'Poupança' : 'Corrente';
+  const normalized = String(value || '').toLowerCase();
+
+  if (normalized === 'poupanca') {
+    return 'Poupança';
+  }
+
+  if (normalized === 'caixa') {
+    return 'Caixa';
+  }
+
+  return 'Corrente';
 }
 
 function parseCurrencyCents(value) {
@@ -140,9 +150,11 @@ function normalizarDadosDashboard(data) {
 }
 
 function normalizarConta(item) {
+  const normalizedType = String(item?.type || '').toLowerCase();
+
   return {
     ...item,
-    type: item?.type === 'poupanca' ? 'poupanca' : 'corrente'
+    type: normalizedType === 'poupanca' || normalizedType === 'caixa' ? normalizedType : 'corrente'
   };
 }
 
@@ -313,13 +325,13 @@ function App() {
         try {
           await loadRemoteData();
         } catch {
-          setError('Não foi possível carregar os dados agora.');
+          setError('Não foi possível carregar os dados agora');
         }
       } catch {
         localStorage.removeItem(STORAGE_KEY);
         clearAuthToken();
         resetAuthState();
-        setAuthNotice('Sua sessão expirou por segurança. Entre novamente para continuar.');
+        setAuthNotice('Sua sessão expirou por segurança. Entre novamente para continuar');
       } finally {
         setAuthLoading(false);
         setLoading(false);
@@ -344,17 +356,17 @@ function App() {
     const trimmedPassword = authForm.password.trim();
 
     if (authView === 'register' && !trimmedName) {
-      setAuthError('Informe seu nome para criar a conta.');
+      setAuthError('Informe seu nome para criar a conta');
       return;
     }
 
     if (!trimmedEmail) {
-      setAuthError('Informe um e-mail válido.');
+      setAuthError('Informe um e-mail válido');
       return;
     }
 
     if (!trimmedPassword) {
-      setAuthError('Informe sua senha.');
+      setAuthError('Informe sua senha');
       return;
     }
 
@@ -378,10 +390,10 @@ function App() {
       try {
         await loadRemoteData();
       } catch {
-        setError('Não foi possível carregar os dados agora.');
+        setError('Não foi possível carregar os dados agora');
       }
     } catch (submissionError) {
-      setAuthError(submissionError.message || 'Não foi possível autenticar.');
+      setAuthError(submissionError.message || 'Não foi possível autenticar');
     } finally {
       setAuthSubmitting(false);
       setLoading(false);
@@ -397,7 +409,7 @@ function App() {
     setAuthView('login');
     setAuthForm(emptyAuthForm);
     setAuthError('');
-    setAuthNotice('Você entrou em modo demonstração. Os dados desta tela não alteram sua conta real.');
+    setAuthNotice('Você entrou em modo demonstração. Os dados desta tela não alteram sua conta real');
     loadDemoData();
     setLoading(false);
   };
@@ -434,7 +446,7 @@ function App() {
     setAuthForm(emptyAuthForm);
     setActiveTab('dashboard');
     resetWorkspaceData();
-    setAuthNotice('Você saiu com segurança. Quando quiser, entre novamente.');
+    setAuthNotice('Você saiu com segurança. Quando quiser, entre novamente');
     setLoading(false);
   };
 
@@ -475,22 +487,22 @@ function App() {
     const newPassword = profileForm.newPassword.trim();
 
     if (!name) {
-      setProfileError('Informe seu nome.');
+      setProfileError('Informe seu nome');
       return;
     }
 
     if (!email) {
-      setProfileError('Informe um e-mail válido.');
+      setProfileError('Informe um e-mail válido');
       return;
     }
 
     if (!currentPassword) {
-      setProfileError('Informe sua senha atual.');
+      setProfileError('Informe sua senha atual');
       return;
     }
 
     if (newPassword && newPassword.length < 6) {
-      setProfileError('A nova senha deve ter no mínimo 6 caracteres.');
+      setProfileError('A nova senha deve ter no mínimo 6 caracteres');
       return;
     }
 
@@ -509,10 +521,10 @@ function App() {
       setAuthToken(token);
       setAuthUser(user);
       setProfileOpen(false);
-      setAuthNotice('Dados do usuário atualizados com sucesso.');
+      setAuthNotice('Dados do usuário atualizados com sucesso');
       setProfileForm(emptyProfileForm);
     } catch (updateError) {
-      setProfileError(updateError?.message || 'Não foi possível atualizar os dados do usuário.');
+      setProfileError(updateError?.message || 'Não foi possível atualizar os dados do usuário');
     } finally {
       setProfileSubmitting(false);
     }
@@ -533,7 +545,7 @@ function App() {
     try {
       await loadRemoteData();
     } catch {
-      setError('Não foi possível atualizar os dados agora.');
+      setError('Não foi possível atualizar os dados agora');
     } finally {
       setRefreshing(false);
     }
@@ -590,7 +602,7 @@ function App() {
     const accountInstitution = form.accountInstitution.trim();
 
     if (!accountName || !accountInstitution) {
-      setError('Preencha Nome da conta e Instituição antes de salvar.');
+      setError('Preencha Nome da conta e Instituição antes de salvar');
       return;
     }
 
@@ -627,7 +639,7 @@ function App() {
       await loadRemoteData();
       setForm((current) => ({ ...current, accountName: '', accountInstitution: '', accountBalance: '0' }));
     } catch {
-      setError('Não foi possível salvar a conta.');
+      setError('Não foi possível salvar a conta');
     }
   };
 
@@ -654,7 +666,17 @@ function App() {
       await deleteAccount(account.id);
       await loadRemoteData();
     } catch (deleteError) {
-      setError(deleteError?.message || 'Não foi possível excluir a conta.');
+      const deleteMessage = deleteError?.message || '';
+      const accountDeleteFallback = 'Não é possível excluir esta conta porque ela possui lançamentos vinculados';
+      if (
+        deleteMessage.toLowerCase().includes('nao encontrada') ||
+        deleteMessage.toLowerCase().includes('não encontrada')
+      ) {
+        setError(accountDeleteFallback);
+        return;
+      }
+
+      setError(deleteMessage || 'Não foi possível excluir a conta');
     }
   };
 
@@ -663,7 +685,7 @@ function App() {
     const categoryName = form.categoryName.trim();
 
     if (!categoryName) {
-      setError('Preencha Nome da categoria antes de salvar.');
+      setError('Preencha Nome da categoria antes de salvar');
       return;
     }
 
@@ -706,7 +728,7 @@ function App() {
       await loadRemoteData();
       resetCategoryForm();
     } catch {
-      setError('Não foi possível salvar a categoria.');
+      setError('Não foi possível salvar a categoria');
     }
   };
 
@@ -734,7 +756,7 @@ function App() {
     if (sessionMode === 'demo') {
       const hasLinkedTransactions = transactions.some((item) => String(item.categoryId) === String(category.id));
       if (hasLinkedTransactions) {
-        setError('Não é possível excluir esta categoria porque ela possui lançamentos vinculados.');
+        setError('Não é possível excluir esta categoria porque ela possui lançamentos vinculados');
         return;
       }
 
@@ -755,7 +777,7 @@ function App() {
       await loadRemoteData();
       resetCategoryForm();
     } catch (deleteError) {
-      setError(deleteError?.message || 'Não foi possível excluir a categoria.');
+      setError(deleteError?.message || 'Não foi possível excluir a categoria');
     }
   };
 
@@ -764,7 +786,7 @@ function App() {
     const transactionDescription = form.transactionDescription.trim();
 
     if (!transactionDescription) {
-      setError('Preencha Descrição antes de salvar.');
+      setError('Preencha Descrição antes de salvar');
       return;
     }
 
@@ -803,7 +825,7 @@ function App() {
       setForm((current) => ({ ...current, transactionDescription: '', transactionAmount: '0' }));
       await loadRemoteData();
     } catch {
-      setError('Não foi possível salvar o lançamento.');
+      setError('Não foi possível salvar o lançamento');
     }
   };
 
@@ -903,7 +925,7 @@ function App() {
     contas: (
       <QuickForm
         title="Nova conta"
-        description="Cadastre contas correntes, poupança ou caixa."
+        description="Cadastre contas correntes, poupança ou caixa"
         fields={[
           { name: 'accountName', label: 'Nome da conta', placeholder: 'Conta principal' },
           {
@@ -912,7 +934,8 @@ function App() {
             type: 'select',
             options: [
               { value: 'corrente', label: 'Corrente' },
-              { value: 'poupanca', label: 'Poupança' }
+              { value: 'poupanca', label: 'Poupança' },
+              { value: 'caixa', label: 'Caixa' }
             ]
           },
           { name: 'accountInstitution', label: 'Instituição', placeholder: 'Banco X' },
@@ -928,7 +951,7 @@ function App() {
       <div>
         <QuickForm
           title={categoryEditingId ? 'Editar categoria' : 'Nova categoria'}
-          description={categoryEditingId ? 'Os campos abaixo mostram a categoria selecionada para edição.' : 'Organize receitas e despesas com cores claras.'}
+          description={categoryEditingId ? 'Os campos abaixo mostram a categoria selecionada para edição.' : 'Organize receitas e despesas com cores claras'}
           fields={[
             { name: 'categoryName', label: 'Nome da categoria', placeholder: 'Aluguel' },
             {
@@ -957,7 +980,7 @@ function App() {
     lancamentos: (
       <QuickForm
         title="Novo lançamento"
-        description="Registre entradas e saídas do fluxo de caixa."
+        description="Registre entradas e saídas do fluxo de caixa"
         fields={[
           { name: 'transactionDescription', label: 'Descrição', placeholder: 'Serviços prestados' },
           { name: 'transactionAmount', label: 'Valor', type: 'currency', placeholder: 'R$ 0,00' },
@@ -1023,7 +1046,7 @@ function App() {
         <div className="two-columns">
           <SectionCard
             title="Lançamentos recentes"
-            description="Visão rápida das últimas movimentações."
+            description="Visão rápida das últimas movimentações"
             action={<span className="section-card__chip">Últimos 5</span>}
           >
             <DataTable columns={columns.transactions} rows={dashboard.recentTransactions || []} />
@@ -1031,7 +1054,7 @@ function App() {
 
           <SectionCard
             title="Contas em destaque"
-            description="Saldos principais do usuario."
+            description="Saldos principais do usuario"
             action={<span className="section-card__chip">Top 3</span>}
           >
             <DataTable columns={columns.accounts} rows={accounts.slice(0, 3)} />
@@ -1043,7 +1066,7 @@ function App() {
       <div className="workspace-grid">
         <SectionCard
           title="Contas cadastradas"
-          description="Lista das contas ativas no sistema."
+          description="Lista das contas ativas no sistema"
           action={<span className="section-card__chip">Base atual</span>}
         >
           <DataTable columns={columns.accounts} rows={accounts} />
@@ -1055,7 +1078,7 @@ function App() {
       <div className="workspace-grid">
         <SectionCard
           title="Categorias cadastradas"
-          description="Classifique receitas e despesas sem complicação."
+          description="Classifique receitas e despesas sem complicação"
           action={<span className="section-card__chip">Organização</span>}
         >
           <DataTable columns={columns.categories} rows={categories} />
@@ -1067,7 +1090,7 @@ function App() {
       <div className="workspace-grid">
         <SectionCard
           title="Movimentações"
-          description="Controle o fluxo de caixa em uma tela única."
+          description="Controle o fluxo de caixa em uma tela única"
           action={<span className="section-card__chip">Fluxo completo</span>}
         >
           <DataTable columns={columns.transactions} rows={transactions} />
@@ -1103,7 +1126,7 @@ function App() {
       <main className="app-content">
         <Topbar
           title={TAB_TITLES[activeTab]}
-          subtitle="Interface clara, responsiva e pronta para trabalhar com a API protegida."
+          subtitle="Interface clara, responsiva e pronta para trabalhar com a API protegida"
           onRefresh={handleRefresh}
           loading={refreshing}
           user={authUser}
@@ -1194,7 +1217,6 @@ function App() {
 }
 
 export default App;
-
 
 
 
