@@ -35,11 +35,6 @@ export default function AuthCard({
           </div>
         </div>
 
-        <div className="auth-badge-row">
-          <span className="auth-badge">API protegida</span>
-          <span className="auth-badge auth-badge--soft">Modo demonstração</span>
-        </div>
-
         <div key={mode} className="auth-panel__content">
           <div className="auth-intro auth-intro--spaced">
             <div className="auth-intro__eyebrow">
@@ -50,12 +45,6 @@ export default function AuthCard({
           </div>
 
           <p className="muted">{helperText}</p>
-
-          <div className="auth-pills" aria-label="Recursos da autenticação">
-            <span>{isRegister ? 'Cadastro guiado' : 'Login seguro'}</span>
-            <span>{isRegister ? 'Painel liberado' : 'Retomada rápida'}</span>
-            <span>Modo demonstração</span>
-          </div>
 
           <form className="auth-form" onSubmit={onSubmit}>
             {isRegister ? (
@@ -112,12 +101,6 @@ export default function AuthCard({
 
             {notice ? <div className="auth-banner auth-banner--info">{notice}</div> : null}
             {error ? <div className="auth-banner auth-banner--error">{error}</div> : null}
-
-            <p className="auth-note">
-              {isRegister
-                ? 'Ao criar a conta, você já entra pronto para testar o fluxo.'
-                : 'Se preferir, entre em modo demonstração e explore sem alterar dados reais.'}
-            </p>
 
             <button type="submit" className="button" disabled={loading}>
               {loading ? 'Processando...' : isRegister ? 'Criar conta' : 'Entrar'}

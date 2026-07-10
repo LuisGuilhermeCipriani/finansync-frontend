@@ -416,7 +416,7 @@ function App() {
     setAuthForm(emptyAuthForm);
     setActiveTab('dashboard');
     resetWorkspaceData();
-    setAuthNotice('Você saiu do modo demonstração. Agora pode escolher outra forma de entrar.');
+    setAuthNotice('');
     setLoading(false);
   };
 
