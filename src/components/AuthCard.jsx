@@ -13,12 +13,10 @@ export default function AuthCard({
 }) {
   const isRegister = mode === 'register';
   const [showPassword, setShowPassword] = React.useState(false);
-  const headline = isRegister
-    ? 'Crie sua conta e comece a organizar suas finanças agora.'
-    : 'Entre para retomar seu painel com contas, categorias e lançamentos.';
+  const registerHeadline = 'Crie sua conta e comece a organizar suas finanças agora';
   const helperText = isRegister
-    ? 'O cadastro é rápido. Depois disso, você já pode testar a interface ou seguir para a API.'
-    : 'Use sua conta cadastrada na API ou entre em modo demonstração para explorar a interface sem risco.';
+    ? 'O cadastro é rápido. Depois disso, você já pode testar a interface ou seguir para a sua conta'
+    : 'Use sua conta cadastrada ou entre em modo demonstração para explorar a interface sem risco';
 
   React.useEffect(() => {
     setShowPassword(false);
@@ -41,7 +39,13 @@ export default function AuthCard({
               <p className="eyebrow auth-eyebrow">{isRegister ? 'Criar acesso' : 'Entrar agora'}</p>
               <span className="auth-intro__line" />
             </div>
-            <h1>{headline}</h1>
+            {isRegister ? (
+              <h1 className="auth-panel__headline auth-panel__headline--register">{registerHeadline}</h1>
+            ) : (
+              <h1 className="auth-panel__headline auth-panel__headline--login">
+                Acesse seu painel com contas, categorias e lançamentos
+              </h1>
+            )}
           </div>
 
           <p className="muted">{helperText}</p>
@@ -96,7 +100,9 @@ export default function AuthCard({
                   {showPassword ? 'Ocultar' : 'Mostrar'}
                 </button>
               </div>
-              <small className="auth-hint">Mantenha a senha em sigilo ao usar computadores compartilhados.</small>
+              <small className="auth-hint auth-hint--spaced">
+                Mantenha a senha em sigilo ao usar computadores compartilhados.
+              </small>
             </label>
 
             {notice ? <div className="auth-banner auth-banner--info">{notice}</div> : null}

@@ -544,12 +544,12 @@ tbody tr {
   min-height: 100vh;
   display: grid;
   place-items: center;
-  padding: 32px;
+  padding: 36px 40px;
 }
 
 .auth-panel {
-  width: min(100%, 640px);
-  padding: 36px;
+  width: min(100%, 760px);
+  padding: 40px 48px;
   border-radius: 32px;
   background: rgba(8, 15, 30, 0.82);
   border: 1px solid var(--border);
@@ -615,7 +615,7 @@ tbody tr {
 }
 
 .auth-intro--spaced {
-  gap: 12px;
+  gap: 14px;
 }
 
 .auth-intro__eyebrow {
@@ -638,7 +638,24 @@ tbody tr {
   margin: 0;
   font-size: clamp(2rem, 4vw, 3rem);
   line-height: 1.05;
-  max-width: 16ch;
+  max-width: 100%;
+}
+
+.auth-panel__headline--login {
+  max-width: 28ch;
+  font-size: clamp(2.15rem, 4vw, 3.25rem);
+  line-height: 1.05;
+  letter-spacing: -0.05em;
+  text-align: left;
+  text-wrap: balance;
+}
+
+.auth-panel__headline--register {
+  max-width: 24ch;
+  font-size: clamp(2.05rem, 3.8vw, 3rem);
+  line-height: 1.06;
+  letter-spacing: -0.04em;
+  text-wrap: balance;
 }
 
 .auth-pills {
@@ -706,6 +723,11 @@ tbody tr {
   color: var(--muted);
   font-size: 0.84rem;
   line-height: 1.35;
+}
+
+.auth-hint--spaced {
+  display: block;
+  margin-bottom: 22px;
 }
 
 .auth-note {
@@ -861,5 +883,17 @@ tbody tr {
 
   .auth-intro__eyebrow {
     gap: 10px;
+  }
+
+  .auth-panel__headline--login {
+    font-size: clamp(1.95rem, 9vw, 2.55rem);
+    line-height: 1.03;
+    max-width: 100%;
+  }
+
+  .auth-panel__headline--register {
+    font-size: clamp(1.9rem, 9vw, 2.45rem);
+    line-height: 1.04;
+    max-width: 100%;
   }
 }
