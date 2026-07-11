@@ -816,18 +816,20 @@ function App() {
     }
 
     const selectedAccountId = String(form.transactionAccountId || '').trim();
-    if (!selectedAccountId || !accounts.some((account) => String(account.id) === selectedAccountId)) {
+    if (!selectedAccountId) {
       setError('Selecione uma conta cadastrada para salvar o lançamento');
       return;
     }
+
+    const selectedCategoryId = String(form.transactionCategoryId || '').trim();
 
     setError('');
     const payload = {
       description: transactionDescription,
       amount: Number(form.transactionAmount || 0),
       type: form.transactionType,
-      accountId: Number(form.transactionAccountId),
-      categoryId: Number(form.transactionCategoryId)
+      accountId: Number(selectedAccountId),
+      categoryId: Number(selectedCategoryId)
     };
 
     if (sessionMode === 'demo') {
