@@ -24,6 +24,11 @@ export default function QuickForm({ title, description, fields, values, onChange
             <span>{field.label}</span>
             {field.type === 'select' ? (
               <select name={field.name} value={values[field.name]} onChange={onChange}>
+                {field.placeholder ? (
+                  <option value="" disabled>
+                    {field.placeholder}
+                  </option>
+                ) : null}
                 {(field.options || []).map((option) => {
                   const optionValue = typeof option === 'string' ? option : option.value;
                   const optionLabel = typeof option === 'string' ? option : option.label;

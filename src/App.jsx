@@ -1035,7 +1035,13 @@ function App() {
               { value: 'despesa', label: 'Despesa' }
             ]
           },
-          { name: 'transactionAccountId', label: 'Conta', type: 'select', options: transactionAccountOptions },
+          {
+            name: 'transactionAccountId',
+            label: 'Conta',
+            type: 'select',
+            placeholder: 'Selecione uma conta',
+            options: transactionAccountOptions
+          },
           { name: 'transactionCategoryId', label: 'Categoria', type: 'select', options: transactionCategoryOptions }
         ]}
         values={form}
