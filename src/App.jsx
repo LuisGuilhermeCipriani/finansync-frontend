@@ -151,16 +151,21 @@ function normalizarDadosDashboard(data) {
 
 function normalizarConta(item) {
   const normalizedType = String(item?.type || '').toLowerCase();
+  const normalizedId = item?.id ?? item?.accountId ?? item?.account_id ?? null;
 
   return {
     ...item,
+    id: normalizedId,
     type: normalizedType === 'poupanca' || normalizedType === 'caixa' ? normalizedType : 'corrente'
   };
 }
 
 function normalizarCategoria(item) {
+  const normalizedId = item?.id ?? item?.categoryId ?? item?.category_id ?? null;
+
   return {
     ...item,
+    id: normalizedId,
     type: normalizarTipoMovimento(item.type)
   };
 }
@@ -795,8 +800,24 @@ function App() {
       return;
     }
 
+    if (accounts.length === 0) {
+      setError('Por favor, crie uma conta primeiro');
+      return;
+    }
+
+    if (!String(form.transactionAccountId || '').trim()) {
+      setError('Selecione uma conta cadastrada para salvar o lançamento');
+      return;
+    }
+
     if (!String(form.transactionCategoryId || '').trim()) {
       setError('Por favor, crie uma categoria');
+      return;
+    }
+
+    const selectedAccountId = String(form.transactionAccountId || '').trim();
+    if (!selectedAccountId || !accounts.some((account) => String(account.id) === selectedAccountId)) {
+      setError('Selecione uma conta cadastrada para salvar o lançamento');
       return;
     }
 
@@ -834,8 +855,19 @@ function App() {
       await createTransaction(payload);
       setForm((current) => ({ ...current, transactionDescription: '', transactionAmount: '0' }));
       await loadRemoteData();
-    } catch {
-      setError('Não foi possível salvar o lançamento');
+    } catch (createError) {
+      const createMessage = String(createError?.message || '');
+      if (createMessage.toLowerCase().includes('conta informada')) {
+        setError('Selecione uma conta cadastrada para salvar o lançamento');
+        return;
+      }
+
+      if (createMessage.toLowerCase().includes('categoria')) {
+        setError('Por favor, crie uma categoria primeiro');
+        return;
+      }
+
+      setError(createMessage || 'Não foi possível salvar o lançamento');
     }
   };
 
@@ -923,13 +955,13 @@ function App() {
   };
 
   const transactionAccountOptions = accounts.map((account) => ({
-    value: String(account.id),
+    value: String(account.id ?? ''),
     label: account.name
-  }));
+  })).filter((account) => account.value.trim());
   const transactionCategoryOptions = categories.map((category) => ({
-    value: String(category.id),
+    value: String(category.id ?? ''),
     label: category.name
-  }));
+  })).filter((category) => category.value.trim());
 
   const forms = {
     contas: (
