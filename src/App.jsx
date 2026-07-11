@@ -193,6 +193,43 @@ function formatarStatus(value) {
   return normalized.charAt(0).toUpperCase() + normalized.slice(1);
 }
 
+function buildSelectionValue(id, label) {
+  return `${String(id ?? '').trim()}::${String(label ?? '').trim()}`;
+}
+
+function parseSelectionValue(value) {
+  const rawValue = String(value ?? '');
+  const separatorIndex = rawValue.indexOf('::');
+
+  if (separatorIndex === -1) {
+    return {
+      id: rawValue.trim(),
+      label: ''
+    };
+  }
+
+  return {
+    id: rawValue.slice(0, separatorIndex).trim(),
+    label: rawValue.slice(separatorIndex + 2).trim()
+  };
+}
+
+function findSelectedOption(options, selectionValue) {
+  const { id, label } = parseSelectionValue(selectionValue);
+
+  const byId = options.find((option) => String(option.id ?? '') === id);
+  if (byId) {
+    return byId;
+  }
+
+  const normalizedLabel = label.toLowerCase();
+  if (!normalizedLabel) {
+    return null;
+  }
+
+  return options.find((option) => String(option.name || '').trim().toLowerCase() === normalizedLabel) || null;
+}
+
 function App() {
   const hasApi = Boolean(import.meta.env.VITE_API_URL);
   const [sessionMode, setSessionMode] = React.useState(hasApi ? 'auth' : 'demo');
@@ -574,28 +611,30 @@ function App() {
   React.useEffect(() => {
     if (accounts.length > 0) {
       setForm((current) => {
-        const hasSelectedAccount = accounts.some((account) => String(account.id) === String(current.transactionAccountId));
+        const selectedAccount = findSelectedOption(accounts, current.transactionAccountId);
+        const hasSelectedAccount = Boolean(selectedAccount);
         if (hasSelectedAccount) {
           return current;
         }
 
         return {
           ...current,
-          transactionAccountId: String(accounts[0].id)
+          transactionAccountId: buildSelectionValue(accounts[0].id, accounts[0].name)
         };
       });
     }
 
     if (categories.length > 0) {
       setForm((current) => {
-        const hasSelectedCategory = categories.some((category) => String(category.id) === String(current.transactionCategoryId));
+        const selectedCategory = findSelectedOption(categories, current.transactionCategoryId);
+        const hasSelectedCategory = Boolean(selectedCategory);
         if (hasSelectedCategory) {
           return current;
         }
 
         return {
           ...current,
-          transactionCategoryId: String(categories[0].id)
+          transactionCategoryId: buildSelectionValue(categories[0].id, categories[0].name)
         };
       });
     }
@@ -805,31 +844,28 @@ function App() {
       return;
     }
 
-    if (!String(form.transactionAccountId || '').trim()) {
+    const selectedAccount = findSelectedOption(accounts, form.transactionAccountId);
+    const selectedCategory = findSelectedOption(categories, form.transactionCategoryId);
+
+    if (!selectedAccount) {
       setError('Selecione uma conta cadastrada para salvar o lançamento');
       return;
     }
 
-    if (!String(form.transactionCategoryId || '').trim()) {
+    if (!selectedCategory) {
       setError('Por favor, crie uma categoria');
       return;
     }
-
-    const selectedAccountId = String(form.transactionAccountId || '').trim();
-    if (!selectedAccountId) {
-      setError('Selecione uma conta cadastrada para salvar o lançamento');
-      return;
-    }
-
-    const selectedCategoryId = String(form.transactionCategoryId || '').trim();
 
     setError('');
     const payload = {
       description: transactionDescription,
       amount: Number(form.transactionAmount || 0),
       type: form.transactionType,
-      accountId: Number(selectedAccountId),
-      categoryId: Number(selectedCategoryId)
+      accountId: Number(selectedAccount.id),
+      accountName: selectedAccount.name,
+      categoryId: Number(selectedCategory.id),
+      categoryName: selectedCategory.name
     };
 
     if (sessionMode === 'demo') {
@@ -860,6 +896,36 @@ function App() {
     } catch (createError) {
       const createMessage = String(createError?.message || '');
       if (createMessage.toLowerCase().includes('conta informada')) {
+        const fallbackAccount = accounts.find(
+          (account) => String(account.name || '').trim().toLowerCase() === String(selectedAccount.name || '').trim().toLowerCase()
+        );
+
+        if (fallbackAccount && String(fallbackAccount.id) !== String(selectedAccount.id)) {
+          try {
+            await createTransaction({
+              ...payload,
+              accountId: Number(fallbackAccount.id)
+            });
+            setForm((current) => ({ ...current, transactionDescription: '', transactionAmount: '0' }));
+            await loadRemoteData();
+            return;
+          } catch (retryError) {
+            const retryMessage = String(retryError?.message || '');
+            if (retryMessage.toLowerCase().includes('conta informada')) {
+              setError('Selecione uma conta cadastrada para salvar o lançamento');
+              return;
+            }
+
+            if (retryMessage.toLowerCase().includes('categoria')) {
+              setError('Por favor, crie uma categoria primeiro');
+              return;
+            }
+
+            setError(retryMessage || 'Não foi possível salvar o lançamento');
+            return;
+          }
+        }
+
         setError('Selecione uma conta cadastrada para salvar o lançamento');
         return;
       }
@@ -957,11 +1023,11 @@ function App() {
   };
 
   const transactionAccountOptions = accounts.map((account) => ({
-    value: String(account.id ?? ''),
+    value: buildSelectionValue(account.id, account.name),
     label: account.name
   })).filter((account) => account.value.trim());
   const transactionCategoryOptions = categories.map((category) => ({
-    value: String(category.id ?? ''),
+    value: buildSelectionValue(category.id, category.name),
     label: category.name
   })).filter((category) => category.value.trim());
 
