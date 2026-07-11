@@ -230,6 +230,18 @@ function findSelectedOption(options, selectionValue) {
   return options.find((option) => String(option.name || '').trim().toLowerCase() === normalizedLabel) || null;
 }
 
+function belongsToUser(item, userId) {
+  if (!userId) {
+    return true;
+  }
+
+  if (item?.userId === undefined || item?.userId === null) {
+    return true;
+  }
+
+  return String(item.userId) === String(userId);
+}
+
 function App() {
   const hasApi = Boolean(import.meta.env.VITE_API_URL);
   const [sessionMode, setSessionMode] = React.useState(hasApi ? 'auth' : 'demo');
@@ -303,7 +315,7 @@ function App() {
     setTransactions([]);
   }, []);
 
-  const loadRemoteData = React.useCallback(async () => {
+  const loadRemoteData = React.useCallback(async (currentUserId = authUser?.id) => {
     setError('');
 
     const [dashboardResponse, accountsResponse, categoriesResponse, transactionsResponse] = await Promise.all([
@@ -313,11 +325,21 @@ function App() {
       getTransactions()
     ]);
 
+    const nextAccounts = (accountsResponse.data || [])
+      .map(normalizarConta)
+      .filter((item) => belongsToUser(item, currentUserId));
+    const nextCategories = (categoriesResponse.data || [])
+      .map(normalizarCategoria)
+      .filter((item) => belongsToUser(item, currentUserId));
+    const nextTransactions = (transactionsResponse.data || [])
+      .map(normalizarLancamento)
+      .filter((item) => belongsToUser(item, currentUserId));
+
     setDashboard(normalizarDadosDashboard(dashboardResponse.data));
-    setAccounts((accountsResponse.data || []).map(normalizarConta));
-    setCategories((categoriesResponse.data || []).map(normalizarCategoria));
-    setTransactions((transactionsResponse.data || []).map(normalizarLancamento));
-  }, []);
+    setAccounts(nextAccounts);
+    setCategories(nextCategories);
+    setTransactions(nextTransactions);
+  }, [authUser?.id]);
 
   const resetAuthState = React.useCallback(() => {
     setAuthUser(null);
@@ -365,7 +387,7 @@ function App() {
         resetWorkspaceData();
 
         try {
-          await loadRemoteData();
+          await loadRemoteData(response.data?.id);
         } catch {
           setError('Não foi possível carregar os dados agora');
         }
@@ -430,7 +452,7 @@ function App() {
       setLoading(true);
       resetWorkspaceData();
       try {
-        await loadRemoteData();
+        await loadRemoteData(response.data?.id);
       } catch {
         setError('Não foi possível carregar os dados agora');
       }
