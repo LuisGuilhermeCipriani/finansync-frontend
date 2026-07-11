@@ -844,8 +844,22 @@ function App() {
       return;
     }
 
-    const selectedAccount = findSelectedOption(accounts, form.transactionAccountId);
-    const selectedCategory = findSelectedOption(categories, form.transactionCategoryId);
+    let currentAccounts = accounts;
+    let currentCategories = categories;
+
+    if (sessionMode !== 'demo') {
+      try {
+        const [freshAccountsResponse, freshCategoriesResponse] = await Promise.all([getAccounts(), getCategories()]);
+        currentAccounts = (freshAccountsResponse.data || []).map(normalizarConta);
+        currentCategories = (freshCategoriesResponse.data || []).map(normalizarCategoria);
+      } catch {
+        currentAccounts = accounts;
+        currentCategories = categories;
+      }
+    }
+
+    const selectedAccount = findSelectedOption(currentAccounts, form.transactionAccountId);
+    const selectedCategory = findSelectedOption(currentCategories, form.transactionCategoryId);
 
     if (!selectedAccount) {
       setError('Selecione uma conta cadastrada para salvar o lançamento');
