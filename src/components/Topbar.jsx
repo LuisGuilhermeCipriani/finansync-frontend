@@ -3,8 +3,6 @@
 export default function Topbar({
   title,
   subtitle,
-  onRefresh,
-  loading,
   user,
   onEditUser,
   onLogout,
@@ -20,7 +18,6 @@ export default function Topbar({
         {subtitle ? <p className="muted">{subtitle}</p> : null}
         <div className="topbar__meta">
           {modeLabel ? <span className="topbar__chip">{modeLabel}</span> : null}
-          {user ? <span className="topbar__chip topbar__chip--ghost">Conectado como {user.name}</span> : null}
         </div>
       </div>
 
@@ -37,9 +34,6 @@ export default function Topbar({
               </button>
             </div>
             <div className="topbar__actions">
-              <button type="button" className="button button--ghost" onClick={onRefresh} disabled={loading}>
-                {loading ? 'Recarregando...' : 'Recarregar dados'}
-              </button>
               <button type="button" className="button button--ghost topbar__logout" onClick={onLogout}>
                 Sair
               </button>

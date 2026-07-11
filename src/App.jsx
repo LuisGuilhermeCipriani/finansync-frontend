@@ -259,7 +259,6 @@ function App() {
   const [profileForm, setProfileForm] = React.useState(emptyProfileForm);
   const [activeTab, setActiveTab] = React.useState('dashboard');
   const [loading, setLoading] = React.useState(true);
-  const [refreshing, setRefreshing] = React.useState(false);
   const [error, setError] = React.useState('');
   const [dashboard, setDashboard] = React.useState(mockDashboard);
   const [accounts, setAccounts] = React.useState(mockAccounts);
@@ -591,27 +590,6 @@ function App() {
       setProfileError(updateError?.message || 'Não foi possível atualizar os dados do usuário');
     } finally {
       setProfileSubmitting(false);
-    }
-  };
-
-  const handleRefresh = async () => {
-    if (sessionMode === 'demo') {
-      setRefreshing(true);
-      try {
-        loadDemoData();
-      } finally {
-        setRefreshing(false);
-      }
-      return;
-    }
-
-    setRefreshing(true);
-    try {
-      await loadRemoteData();
-    } catch {
-      setError('Não foi possível atualizar os dados agora');
-    } finally {
-      setRefreshing(false);
     }
   };
 
@@ -1279,8 +1257,6 @@ function App() {
         <Topbar
           title={TAB_TITLES[activeTab]}
           subtitle=""
-          onRefresh={handleRefresh}
-          loading={refreshing}
           user={authUser}
           onEditUser={handleOpenProfile}
           onLogout={sessionMode === 'demo' ? handleReturnToLogin : handleLogout}
