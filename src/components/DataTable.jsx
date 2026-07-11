@@ -15,7 +15,7 @@ export default function DataTable({ columns, rows }) {
           {rows.length === 0 ? (
             <tr>
               <td colSpan={columns.length} className="empty-state">
-                Nenhum registro encontrado.
+                Nenhum registro encontrado
               </td>
             </tr>
           ) : (

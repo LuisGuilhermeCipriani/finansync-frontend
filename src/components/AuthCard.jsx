@@ -26,7 +26,7 @@ export default function AuthCard({
     <section className="auth-shell">
       <div className="auth-panel">
         <div className="brand auth-brand">
-          <div className="brand__mark">F</div>
+          <img className="brand__logo" src="/logo-mark.png" alt="Logo Finansync" />
           <div>
             <strong>Finansync</strong>
             <span>Gestão Financeira</span>
@@ -101,7 +101,7 @@ export default function AuthCard({
                 </button>
               </div>
               <small className="auth-hint auth-hint--spaced">
-                Mantenha a senha em sigilo ao usar computadores compartilhados.
+                Mantenha a senha em sigilo ao usar computadores compartilhados
               </small>
             </label>
 

@@ -11,7 +11,7 @@ export default function Sidebar({ activeTab, onChangeTab }) {
   return (
     <aside className="sidebar">
       <div className="brand">
-        <div className="brand__mark">F</div>
+        <img className="brand__logo" src="/logo-mark.png" alt="Logo Finansync" />
         <div>
           <strong>Finansync</strong>
           <span>Gestão Financeira</span>
@@ -31,9 +31,6 @@ export default function Sidebar({ activeTab, onChangeTab }) {
         ))}
       </nav>
 
-      <div className="sidebar__footer">
-        <p>Versão desktop web, pronta para evoluir para Electron.</p>
-      </div>
     </aside>
   );
 }
