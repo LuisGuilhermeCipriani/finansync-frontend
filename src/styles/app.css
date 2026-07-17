@@ -435,6 +435,11 @@ td {
   border-bottom: 1px solid rgba(148, 163, 184, 0.12);
 }
 
+th:not(:last-child),
+td:not(:last-child) {
+  border-right: 1px solid rgba(148, 163, 184, 0.1);
+}
+
 th {
   background: rgba(15, 23, 42, 0.84);
   color: #e2e8f0;
@@ -445,6 +450,10 @@ th {
   top: 0;
   z-index: 1;
   backdrop-filter: blur(8px);
+}
+
+tbody tr:last-child td {
+  border-bottom-color: transparent;
 }
 
 tbody tr:nth-child(even) td {
