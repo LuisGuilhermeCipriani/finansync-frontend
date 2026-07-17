@@ -398,7 +398,15 @@ function App() {
       .map(normalizarLancamento)
       .filter((item) => belongsToUser(item, currentUserId));
 
-    setDashboard(normalizarDadosDashboard(dashboardResponse.data));
+    const dashboardData = dashboardResponse.data || {};
+    const nextDashboard = normalizarDadosDashboard(sumDashboardData(nextTransactions, nextAccounts, nextCategories));
+
+    setDashboard({
+      ...nextDashboard,
+      receita: Number(dashboardData?.receita ?? dashboardData?.income ?? nextDashboard.receita ?? 0),
+      despesa: Number(dashboardData?.despesa ?? dashboardData?.expense ?? nextDashboard.despesa ?? 0),
+      recentTransactions: nextDashboard.recentTransactions
+    });
     setAccounts(nextAccounts);
     setCategories(nextCategories);
     setTransactions(nextTransactions);
