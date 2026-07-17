@@ -206,8 +206,9 @@
 .table-actions {
   display: flex;
   gap: 8px;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   justify-content: center;
+  white-space: nowrap;
 }
 
 .transaction-category-cell {
@@ -217,6 +218,10 @@
 .category-color-cell {
   padding: 0;
   min-width: 72px;
+}
+
+.category-actions-cell {
+  width: 18rem;
 }
 
 tbody tr:hover td.transaction-category-cell {

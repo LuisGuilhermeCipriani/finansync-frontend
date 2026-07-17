@@ -1051,7 +1051,7 @@ function App() {
         key: 'name',
         label: 'Nome',
         className: 'category-name-cell',
-        style: { width: '58%' }
+        style: { width: '42%' }
       },
       { key: 'type', label: 'Tipo', render: (row) => formatarTipoMovimento(row.type) },
       {
@@ -1065,6 +1065,8 @@ function App() {
       {
         key: 'actions',
         label: 'Ações',
+        className: 'category-actions-cell',
+        style: { width: '18rem' },
         render: (row) => (
           <div className="table-actions">
             <button
