@@ -361,15 +361,6 @@ function App() {
     }
   }, [authView]);
 
-  React.useEffect(() => {
-    if (activeTab !== 'lancamentos' || sessionMode !== 'auth' || authStatus !== 'authenticated') {
-      return undefined;
-    }
-
-    void loadRemoteData();
-    return undefined;
-  }, [activeTab, authStatus, loadRemoteData, sessionMode]);
-
   const loadDemoData = React.useCallback(() => {
     const nextAccounts = mockAccounts.map(normalizarConta);
     const nextCategories = mockCategories.map(normalizarCategoria);
@@ -420,6 +411,15 @@ function App() {
     setCategories(nextCategories);
     setTransactions(nextTransactions);
   }, [authUser?.id]);
+
+  React.useEffect(() => {
+    if (activeTab !== 'lancamentos' || sessionMode !== 'auth' || authStatus !== 'authenticated') {
+      return undefined;
+    }
+
+    void loadRemoteData();
+    return undefined;
+  }, [activeTab, authStatus, loadRemoteData, sessionMode]);
 
   const resetAuthState = React.useCallback(() => {
     setAuthUser(null);
