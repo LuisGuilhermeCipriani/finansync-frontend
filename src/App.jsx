@@ -1050,21 +1050,17 @@ function App() {
       {
         key: 'name',
         label: 'Nome',
-        className: 'category-name-cell',
-        style: { width: '38%' }
+        className: 'category-name-cell'
       },
       {
         key: 'type',
         label: 'Tipo',
-        className: 'category-type-cell',
-        style: { width: '18%' },
         render: (row) => formatarTipoMovimento(row.type)
       },
       {
         key: 'color',
         label: 'Cor',
         className: 'category-color-cell',
-        style: { width: '8%' },
         render: (row) => (
           <span
             className="category-color-chip"
@@ -1078,14 +1074,12 @@ function App() {
         key: 'active',
         label: 'Ativa',
         className: 'category-active-cell',
-        style: { width: '10%' },
         render: (row) => (row.active ? 'Sim' : 'Não')
       },
       {
         key: 'actions',
         label: 'Ações',
         className: 'category-actions-cell',
-        style: { width: '26%' },
         render: (row) => (
           <div className="table-actions">
             <button
@@ -1349,7 +1343,7 @@ function App() {
           description="Classificação de receitas e despesas"
           action={<span className="section-card__chip">Organização</span>}
         >
-          <DataTable columns={columns.categories} rows={categories} tableClassName="categories-table" />
+          <DataTable columns={columns.categories} rows={categories} />
         </SectionCard>
         {forms.categorias}
       </div>

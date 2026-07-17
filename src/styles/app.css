@@ -217,30 +217,17 @@
 
 .category-color-cell {
   padding: 8px 10px;
-  min-width: 36px;
-}
-
-.category-name-cell {
-  width: 46%;
-}
-
-.category-type-cell {
-  width: 18%;
-}
-
-.category-active-cell {
-  width: 10%;
+  min-width: 44px;
+  text-align: center;
 }
 
 .category-color-chip {
   display: block;
-  width: 100%;
+  width: 50%;
+  min-width: 28px;
   min-height: 28px;
+  margin: 0 auto;
   border-radius: 10px;
-}
-
-.category-actions-cell {
-  width: 18rem;
 }
 
 tbody tr:hover td.transaction-category-cell {
@@ -448,10 +435,6 @@ table {
   width: 100%;
   border-collapse: collapse;
   min-width: 540px;
-}
-
-.categories-table {
-  table-layout: fixed;
 }
 
 th,
