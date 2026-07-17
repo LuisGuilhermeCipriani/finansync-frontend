@@ -241,6 +241,15 @@ function buildTransactionDescriptionStyle(backgroundColor) {
   };
 }
 
+function buildCategoryColorStyle(backgroundColor) {
+  const safeBackgroundColor = backgroundColor || '#2563eb';
+
+  return {
+    backgroundColor: safeBackgroundColor,
+    color: getContrastTextColor(safeBackgroundColor)
+  };
+}
+
 function buildSelectionValue(id, label) {
   return `${String(id ?? '').trim()}::${String(label ?? '').trim()}`;
 }
@@ -1043,7 +1052,7 @@ function App() {
         key: 'color',
         label: 'Cor',
         className: 'category-color-cell',
-        style: (row) => buildTransactionDescriptionStyle(row.color),
+        style: (row) => buildCategoryColorStyle(row.color),
         render: () => null
       },
       { key: 'active', label: 'Ativa', render: (row) => (row.active ? 'Sim' : 'Não') },
