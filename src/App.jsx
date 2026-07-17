@@ -1051,7 +1051,7 @@ function App() {
         key: 'name',
         label: 'Nome',
         className: 'category-name-cell',
-        style: { width: '46%' }
+        style: { width: '38%' }
       },
       {
         key: 'type',
@@ -1064,7 +1064,7 @@ function App() {
         key: 'color',
         label: 'Cor',
         className: 'category-color-cell',
-        style: { width: '4rem' },
+        style: { width: '8%' },
         render: (row) => (
           <span
             className="category-color-chip"
@@ -1085,7 +1085,7 @@ function App() {
         key: 'actions',
         label: 'Ações',
         className: 'category-actions-cell',
-        style: { width: '18rem' },
+        style: { width: '26%' },
         render: (row) => (
           <div className="table-actions">
             <button
