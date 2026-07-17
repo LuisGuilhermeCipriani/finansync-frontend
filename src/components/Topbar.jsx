@@ -29,11 +29,11 @@ export default function Topbar({
                 <strong>{user.name}</strong>
                 <span>{user.email}</span>
               </div>
+            </div>
+            <div className="topbar__actions">
               <button type="button" className="button button--ghost" onClick={onEditUser}>
                 Editar usuário
               </button>
-            </div>
-            <div className="topbar__actions">
               <button type="button" className="button button--ghost topbar__logout" onClick={onLogout}>
                 Sair
               </button>
