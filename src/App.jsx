@@ -199,6 +199,48 @@ function formatarStatus(value) {
   return normalized.charAt(0).toUpperCase() + normalized.slice(1);
 }
 
+function parseHexColor(value) {
+  const hex = String(value || '').trim().replace('#', '');
+
+  if (/^[0-9a-f]{3}$/i.test(hex)) {
+    return {
+      r: parseInt(hex[0] + hex[0], 16),
+      g: parseInt(hex[1] + hex[1], 16),
+      b: parseInt(hex[2] + hex[2], 16)
+    };
+  }
+
+  if (/^[0-9a-f]{6}$/i.test(hex)) {
+    return {
+      r: parseInt(hex.slice(0, 2), 16),
+      g: parseInt(hex.slice(2, 4), 16),
+      b: parseInt(hex.slice(4, 6), 16)
+    };
+  }
+
+  return null;
+}
+
+function getContrastTextColor(backgroundColor) {
+  const rgb = parseHexColor(backgroundColor);
+
+  if (!rgb) {
+    return '#ffffff';
+  }
+
+  const luminance = (rgb.r * 299 + rgb.g * 587 + rgb.b * 114) / 1000;
+  return luminance >= 160 ? '#000000' : '#ffffff';
+}
+
+function buildTransactionDescriptionStyle(backgroundColor) {
+  const safeBackgroundColor = backgroundColor || '#2563eb';
+
+  return {
+    backgroundColor: safeBackgroundColor,
+    color: getContrastTextColor(safeBackgroundColor)
+  };
+}
+
 function buildSelectionValue(id, label) {
   return `${String(id ?? '').trim()}::${String(label ?? '').trim()}`;
 }
@@ -1053,6 +1095,24 @@ function App() {
     ]
   };
 
+  const launchTransactionColumns = [
+    {
+      key: 'description',
+      label: 'Descrição',
+      render: (row) => {
+        const category = categories.find((item) => String(item.id) === String(row.categoryId));
+        const descriptionStyle = buildTransactionDescriptionStyle(category?.color);
+
+        return (
+          <span className="transaction-description-chip" style={descriptionStyle}>
+            {row.description}
+          </span>
+        );
+      }
+    },
+    ...columns.transactions.slice(1)
+  ];
+
   const transactionAccountOptions = accounts.map((account) => ({
     value: buildSelectionValue(account.id, account.name),
     label: account.name
@@ -1246,7 +1306,7 @@ function App() {
           description="Controle do fluxo de caixa"
           action={<span className="section-card__chip">Fluxo completo</span>}
         >
-          <DataTable columns={columns.transactions} rows={transactions} />
+          <DataTable columns={launchTransactionColumns} rows={transactions} />
         </SectionCard>
         {forms.lancamentos}
       </div>
