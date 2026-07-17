@@ -51,7 +51,7 @@ export default function QuickForm({ title, description, fields, values, onChange
                   onBlur={() => setFocusedSelectField((current) => (current === field.name ? '' : current))}
                 >
                   {field.placeholder ? (
-                    <option value="" disabled>
+                    <option value="" disabled hidden>
                       {field.placeholder}
                     </option>
                   ) : null}
