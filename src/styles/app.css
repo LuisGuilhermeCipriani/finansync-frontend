@@ -220,6 +220,18 @@
   min-width: 44px;
 }
 
+.category-name-cell {
+  width: 46%;
+}
+
+.category-type-cell {
+  width: 18%;
+}
+
+.category-active-cell {
+  width: 10%;
+}
+
 .category-color-chip {
   display: block;
   width: 100%;
@@ -436,6 +448,10 @@ table {
   width: 100%;
   border-collapse: collapse;
   min-width: 540px;
+}
+
+.categories-table {
+  table-layout: fixed;
 }
 
 th,

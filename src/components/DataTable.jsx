@@ -1,9 +1,9 @@
 ﻿import React from 'react';
 
-export default function DataTable({ columns, rows }) {
+export default function DataTable({ columns, rows, tableClassName = '' }) {
   return (
     <div className="table-wrap">
-      <table>
+      <table className={tableClassName}>
         <thead>
           <tr>
             {columns.map((column) => (
