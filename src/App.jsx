@@ -300,6 +300,15 @@ function belongsToUser(item, userId) {
   return String(item.userId) === String(userId);
 }
 
+function getStoredActiveTab() {
+  if (typeof window === 'undefined') {
+    return 'dashboard';
+  }
+
+  const storedTab = localStorage.getItem('finansync_active_tab');
+  return Object.prototype.hasOwnProperty.call(TAB_TITLES, storedTab) ? storedTab : 'dashboard';
+}
+
 function App() {
   const hasApi = Boolean(import.meta.env.VITE_API_URL);
   const [sessionMode, setSessionMode] = React.useState(hasApi ? 'auth' : 'demo');
@@ -315,7 +324,7 @@ function App() {
   const [profileSubmitting, setProfileSubmitting] = React.useState(false);
   const [profileError, setProfileError] = React.useState('');
   const [profileForm, setProfileForm] = React.useState(emptyProfileForm);
-  const [activeTab, setActiveTab] = React.useState('dashboard');
+  const [activeTab, setActiveTab] = React.useState(getStoredActiveTab);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState('');
   const [dashboard, setDashboard] = React.useState(mockDashboard);
@@ -354,6 +363,10 @@ function App() {
     document.documentElement.scrollTop = 0;
     document.body.scrollTop = 0;
   }, [activeTab, authView, sessionMode, authStatus]);
+
+  React.useEffect(() => {
+    localStorage.setItem('finansync_active_tab', activeTab);
+  }, [activeTab]);
 
   React.useEffect(() => {
     if (authView !== 'login') {
@@ -1331,7 +1344,7 @@ function App() {
             description="Visão rápida das últimas movimentações"
             action={<span className="section-card__chip">Últimos 5</span>}
           >
-            <DataTable columns={columns.transactions} rows={dashboard.recentTransactions || []} />
+            <DataTable columns={launchTransactionColumns} rows={dashboard.recentTransactions || []} />
           </SectionCard>
 
           <SectionCard
