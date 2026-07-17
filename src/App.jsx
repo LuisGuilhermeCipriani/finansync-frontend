@@ -1099,6 +1099,7 @@ function App() {
     {
       key: 'description',
       label: 'Descrição',
+      className: 'transaction-description-cell',
       render: (row) => {
         const category = categories.find((item) => String(item.id) === String(row.categoryId));
         const descriptionStyle = buildTransactionDescriptionStyle(category?.color);

@@ -22,7 +22,9 @@ export default function DataTable({ columns, rows }) {
             rows.map((row) => (
               <tr key={row.id}>
                 {columns.map((column) => (
-                  <td key={column.key}>{column.render ? column.render(row) : row[column.key]}</td>
+                  <td key={column.key} className={column.className || ''}>
+                    {column.render ? column.render(row) : row[column.key]}
+                  </td>
                 ))}
               </tr>
             ))
