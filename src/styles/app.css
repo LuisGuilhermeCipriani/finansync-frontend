@@ -834,6 +834,7 @@ tbody tr {
   gap: 12px;
   justify-items: end;
   align-items: center;
+  width: fit-content;
   padding: 12px;
   border-radius: 22px;
   background: rgba(8, 15, 30, 0.4);
@@ -844,6 +845,7 @@ tbody tr {
   display: flex;
   align-items: flex-start;
   gap: 12px;
+  width: 100%;
   padding: 10px 14px;
   border-radius: 18px;
   border: 1px solid var(--border);
@@ -852,9 +854,9 @@ tbody tr {
 
 .topbar__actions {
   width: 100%;
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   align-items: center;
-  justify-content: flex-end;
   gap: 12px;
 }
 
@@ -934,6 +936,7 @@ tbody tr {
 
   .topbar__surface {
     justify-items: stretch;
+    width: 100%;
     padding: 10px;
   }
 
@@ -942,7 +945,7 @@ tbody tr {
   }
 
   .topbar__actions {
-    justify-content: stretch;
+    width: 100%;
   }
 
   .topbar__logout {
