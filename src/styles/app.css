@@ -210,20 +210,12 @@
 }
 
 .transaction-description-cell {
-  padding: 0;
+  transition: background-color 160ms ease, color 160ms ease;
 }
 
-.transaction-description-chip {
-  display: flex;
-  align-items: center;
-  width: 100%;
-  min-height: 100%;
-  box-sizing: border-box;
-  padding: 14px 16px;
-  border-radius: 0;
-  font-weight: 700;
-  line-height: 1.2;
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.14);
+tbody tr:hover td.transaction-description-cell {
+  background: var(--transaction-description-bg, rgba(56, 189, 248, 0.12));
+  color: var(--transaction-description-fg, #ffffff);
 }
 
 .profile-modal {

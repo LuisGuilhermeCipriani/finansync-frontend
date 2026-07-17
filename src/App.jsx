@@ -236,8 +236,8 @@ function buildTransactionDescriptionStyle(backgroundColor) {
   const safeBackgroundColor = backgroundColor || '#2563eb';
 
   return {
-    backgroundColor: safeBackgroundColor,
-    color: getContrastTextColor(safeBackgroundColor)
+    '--transaction-description-bg': safeBackgroundColor,
+    '--transaction-description-fg': getContrastTextColor(safeBackgroundColor)
   };
 }
 
@@ -1100,16 +1100,11 @@ function App() {
       key: 'description',
       label: 'Descrição',
       className: 'transaction-description-cell',
-      render: (row) => {
+      style: (row) => {
         const category = categories.find((item) => String(item.id) === String(row.categoryId));
-        const descriptionStyle = buildTransactionDescriptionStyle(category?.color);
-
-        return (
-          <span className="transaction-description-chip" style={descriptionStyle}>
-            {row.description}
-          </span>
-        );
-      }
+        return buildTransactionDescriptionStyle(category?.color);
+      },
+      render: (row) => row.description
     },
     ...columns.transactions.slice(1)
   ];
