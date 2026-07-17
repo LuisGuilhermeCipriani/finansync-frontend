@@ -709,7 +709,7 @@ function App() {
       const categoriasDoTipo = getCategoriasPorTipo(categories, current.transactionType);
       const selectedCategory = findSelectedOption(categoriasDoTipo, current.transactionCategoryId);
 
-      if (selectedCategory) {
+      if (selectedCategory || current.transactionCategoryId === '') {
         return current;
       }
 
@@ -719,7 +719,7 @@ function App() {
 
       return {
         ...current,
-        transactionCategoryId: buildSelectionValue(categoriasDoTipo[0].id, categoriasDoTipo[0].name)
+        transactionCategoryId: ''
       };
     });
   }, [categories, form.transactionType]);
