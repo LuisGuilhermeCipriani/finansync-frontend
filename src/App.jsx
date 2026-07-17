@@ -1058,8 +1058,14 @@ function App() {
         key: 'color',
         label: 'Cor',
         className: 'category-color-cell',
-        style: (row) => buildCategoryColorStyle(row.color),
-        render: () => null
+        render: (row) => (
+          <span
+            className="category-color-chip"
+            style={buildCategoryColorStyle(row.color)}
+            aria-label={`Cor cadastrada: ${row.color}`}
+            title={`Cor cadastrada: ${row.color}`}
+          />
+        )
       },
       { key: 'active', label: 'Ativa', render: (row) => (row.active ? 'Sim' : 'Não') },
       {

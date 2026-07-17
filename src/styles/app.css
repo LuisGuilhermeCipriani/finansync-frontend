@@ -216,8 +216,15 @@
 }
 
 .category-color-cell {
-  padding: 0;
-  min-width: 72px;
+  padding: 8px 10px;
+  min-width: 88px;
+}
+
+.category-color-chip {
+  display: block;
+  width: 100%;
+  min-height: 28px;
+  border-radius: 10px;
 }
 
 .category-actions-cell {
