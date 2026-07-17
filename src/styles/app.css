@@ -207,6 +207,7 @@
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
+  justify-content: center;
 }
 
 .transaction-description-cell {
@@ -423,7 +424,7 @@ table {
 th,
 td {
   padding: 14px 16px;
-  text-align: left;
+  text-align: center;
   border-bottom: 1px solid rgba(148, 163, 184, 0.12);
 }
 
