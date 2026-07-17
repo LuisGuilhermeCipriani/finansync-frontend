@@ -246,7 +246,8 @@ function buildCategoryColorStyle(backgroundColor) {
 
   return {
     backgroundColor: safeBackgroundColor,
-    color: getContrastTextColor(safeBackgroundColor)
+    color: getContrastTextColor(safeBackgroundColor),
+    width: '10rem'
   };
 }
 
@@ -1046,7 +1047,12 @@ function App() {
       }
     ],
     categories: [
-      { key: 'name', label: 'Nome' },
+      {
+        key: 'name',
+        label: 'Nome',
+        className: 'category-name-cell',
+        style: { width: '58%' }
+      },
       { key: 'type', label: 'Tipo', render: (row) => formatarTipoMovimento(row.type) },
       {
         key: 'color',

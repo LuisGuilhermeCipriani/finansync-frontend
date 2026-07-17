@@ -216,7 +216,7 @@
 
 .category-color-cell {
   padding: 0;
-  min-width: 120px;
+  min-width: 72px;
 }
 
 tbody tr:hover td.transaction-category-cell {
