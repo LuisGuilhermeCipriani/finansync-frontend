@@ -1274,10 +1274,7 @@ function App() {
             name: 'transactionCategoryId',
             label: 'Categoria',
             type: 'select',
-            placeholder:
-              transactionCategoryOptions.length > 0
-                ? 'Ex.: Selecione uma categoria'
-                : 'Ex.: Não há categorias registradas.',
+            placeholder: 'Selecione uma categoria',
             options: transactionCategoryOptions
           }
         ]}

@@ -25,7 +25,8 @@ export default function QuickForm({ title, description, fields, values, onChange
           <label key={field.name}>
             <span>{field.label}</span>
             {field.type === 'select' ? (
-              field.name === 'transactionAccountId' && (field.options || []).length === 0 ? (
+              (field.name === 'transactionAccountId' || field.name === 'transactionCategoryId') &&
+              (field.options || []).length === 0 ? (
                 <div className="quick-form__select-shell">
                   <button
                     type="button"
@@ -34,11 +35,17 @@ export default function QuickForm({ title, description, fields, values, onChange
                       setOpenEmptySelectField((current) => (current === field.name ? '' : field.name))
                     }
                   >
-                    <span>{field.placeholder || 'Selecione uma conta'}</span>
+                    <span>
+                      {field.name === 'transactionAccountId'
+                        ? 'Selecione uma conta'
+                        : 'Selecione uma categoria'}
+                    </span>
                   </button>
                   {openEmptySelectField === field.name ? (
                     <div className="quick-form__select-empty" role="status" aria-live="polite">
-                      Não há contas registradas
+                      {field.name === 'transactionAccountId'
+                        ? 'Não há contas registradas'
+                        : 'Não há categorias registradas'}
                     </div>
                   ) : null}
                 </div>
