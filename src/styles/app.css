@@ -526,6 +526,25 @@ tbody tr {
   transition: border-color 160ms ease, background 160ms ease, box-shadow 160ms ease;
 }
 
+.quick-form__select-shell {
+  position: relative;
+}
+
+.quick-form__select-empty {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(100% + 6px);
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: rgba(15, 23, 42, 0.98);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  color: var(--muted);
+  font-size: 0.9rem;
+  box-shadow: 0 12px 30px rgba(2, 6, 23, 0.34);
+  z-index: 5;
+}
+
 .quick-form input:hover,
 .quick-form select:hover,
 .auth-form input:hover {

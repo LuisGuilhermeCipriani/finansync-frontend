@@ -11,6 +11,7 @@ function formatarMoeda(value) {
 
 export default function QuickForm({ title, description, fields, values, onChange, onSubmit, submitLabel }) {
   const [focusedCurrencyField, setFocusedCurrencyField] = React.useState('');
+  const [focusedSelectField, setFocusedSelectField] = React.useState('');
 
   return (
     <form className="quick-form" onSubmit={onSubmit}>
@@ -23,23 +24,38 @@ export default function QuickForm({ title, description, fields, values, onChange
           <label key={field.name}>
             <span>{field.label}</span>
             {field.type === 'select' ? (
-              <select name={field.name} value={values[field.name]} onChange={onChange}>
-                {field.placeholder ? (
-                  <option value="" disabled>
-                    {field.placeholder}
-                  </option>
-                ) : null}
-                {(field.options || []).map((option) => {
-                  const optionValue = typeof option === 'string' ? option : option.value;
-                  const optionLabel = typeof option === 'string' ? option : option.label;
-
-                  return (
-                    <option key={optionValue} value={optionValue}>
-                      {optionLabel}
+              <div className="quick-form__select-shell">
+                <select
+                  name={field.name}
+                  value={values[field.name]}
+                  onChange={onChange}
+                  onFocus={() => setFocusedSelectField(field.name)}
+                  onBlur={() => setFocusedSelectField((current) => (current === field.name ? '' : current))}
+                >
+                  {field.placeholder ? (
+                    <option value="" disabled>
+                      {field.placeholder}
                     </option>
-                  );
-                })}
-              </select>
+                  ) : null}
+                  {(field.options || []).map((option) => {
+                    const optionValue = typeof option === 'string' ? option : option.value;
+                    const optionLabel = typeof option === 'string' ? option : option.label;
+
+                    return (
+                      <option key={optionValue} value={optionValue}>
+                        {optionLabel}
+                      </option>
+                    );
+                  })}
+                </select>
+                {field.name === 'transactionAccountId' &&
+                focusedSelectField === field.name &&
+                (field.options || []).length === 0 ? (
+                  <div className="quick-form__select-empty" role="status" aria-live="polite">
+                    Não há contas registradas
+                  </div>
+                ) : null}
+              </div>
             ) : field.type === 'currency' ? (
               <input
                 type="text"

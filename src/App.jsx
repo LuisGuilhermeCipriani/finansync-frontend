@@ -1267,7 +1267,7 @@ function App() {
             name: 'transactionAccountId',
             label: 'Conta',
             type: 'select',
-            placeholder: transactionAccountOptions.length > 0 ? 'Selecione uma conta' : 'Não há contas registradas',
+            placeholder: 'Selecione uma conta',
             options: transactionAccountOptions
           },
           {
