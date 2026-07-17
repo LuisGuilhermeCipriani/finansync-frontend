@@ -111,6 +111,12 @@ function normalizarTipoMovimento(value) {
   return 'despesa';
 }
 
+function getCategoriasPorTipo(categorias, tipoMovimento) {
+  const normalizedType = normalizarTipoMovimento(tipoMovimento);
+
+  return categorias.filter((categoria) => normalizarTipoMovimento(categoria.type) === normalizedType);
+}
+
 function formatarTipoMovimento(value) {
   return normalizarTipoMovimento(value) === 'receita' ? 'Receita' : 'Despesa';
 }
@@ -609,36 +615,42 @@ function App() {
   }, []);
 
   React.useEffect(() => {
-    if (accounts.length > 0) {
-      setForm((current) => {
-        const selectedAccount = findSelectedOption(accounts, current.transactionAccountId);
-        const hasSelectedAccount = Boolean(selectedAccount);
-        if (hasSelectedAccount) {
-          return current;
-        }
-
-        return {
-          ...current,
-          transactionAccountId: buildSelectionValue(accounts[0].id, accounts[0].name)
-        };
-      });
+    if (accounts.length === 0) {
+      return;
     }
 
-    if (categories.length > 0) {
-      setForm((current) => {
-        const selectedCategory = findSelectedOption(categories, current.transactionCategoryId);
-        const hasSelectedCategory = Boolean(selectedCategory);
-        if (hasSelectedCategory) {
-          return current;
-        }
+    setForm((current) => {
+      const selectedAccount = findSelectedOption(accounts, current.transactionAccountId);
+      if (selectedAccount) {
+        return current;
+      }
 
-        return {
-          ...current,
-          transactionCategoryId: buildSelectionValue(categories[0].id, categories[0].name)
-        };
-      });
-    }
-  }, [accounts, categories]);
+      return {
+        ...current,
+        transactionAccountId: buildSelectionValue(accounts[0].id, accounts[0].name)
+      };
+    });
+  }, [accounts]);
+
+  React.useEffect(() => {
+    setForm((current) => {
+      const categoriasDoTipo = getCategoriasPorTipo(categories, current.transactionType);
+      const selectedCategory = findSelectedOption(categoriasDoTipo, current.transactionCategoryId);
+
+      if (selectedCategory) {
+        return current;
+      }
+
+      if (categoriasDoTipo.length === 0) {
+        return current.transactionCategoryId ? { ...current, transactionCategoryId: '' } : current;
+      }
+
+      return {
+        ...current,
+        transactionCategoryId: buildSelectionValue(categoriasDoTipo[0].id, categoriasDoTipo[0].name)
+      };
+    });
+  }, [categories, form.transactionType]);
 
   const handleSubmitAccount = async (event) => {
     event.preventDefault();
@@ -859,7 +871,8 @@ function App() {
     }
 
     const selectedAccount = findSelectedOption(currentAccounts, form.transactionAccountId);
-    const selectedCategory = findSelectedOption(currentCategories, form.transactionCategoryId);
+    const currentCategoriesByType = getCategoriasPorTipo(currentCategories, form.transactionType);
+    const selectedCategory = findSelectedOption(currentCategoriesByType, form.transactionCategoryId);
 
     if (!selectedAccount) {
       setError('Selecione uma conta cadastrada para salvar o lançamento');
@@ -867,7 +880,11 @@ function App() {
     }
 
     if (!selectedCategory) {
-      setError('Por favor, crie uma categoria');
+      if (currentCategoriesByType.length === 0) {
+        setError(`Por favor, crie uma categoria do tipo ${normalizarTipoMovimento(form.transactionType)} primeiro`);
+      } else {
+        setError(`Selecione uma categoria do tipo ${normalizarTipoMovimento(form.transactionType)} para salvar o lançamento`);
+      }
       return;
     }
 
@@ -1040,7 +1057,7 @@ function App() {
     value: buildSelectionValue(account.id, account.name),
     label: account.name
   })).filter((account) => account.value.trim());
-  const transactionCategoryOptions = categories.map((category) => ({
+  const transactionCategoryOptions = getCategoriasPorTipo(categories, form.transactionType).map((category) => ({
     value: buildSelectionValue(category.id, category.name),
     label: category.name
   })).filter((category) => category.value.trim());
@@ -1124,7 +1141,13 @@ function App() {
             placeholder: 'Selecione uma conta',
             options: transactionAccountOptions
           },
-          { name: 'transactionCategoryId', label: 'Categoria', type: 'select', options: transactionCategoryOptions }
+          {
+            name: 'transactionCategoryId',
+            label: 'Categoria',
+            type: 'select',
+            placeholder: 'Selecione uma categoria',
+            options: transactionCategoryOptions
+          }
         ]}
         values={form}
         onChange={handleChange}
