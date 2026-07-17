@@ -1044,7 +1044,7 @@ function App() {
         label: 'Cor',
         className: 'category-color-cell',
         style: (row) => buildTransactionDescriptionStyle(row.color),
-        render: (row) => row.color
+        render: () => null
       },
       { key: 'active', label: 'Ativa', render: (row) => (row.active ? 'Sim' : 'Não') },
       {

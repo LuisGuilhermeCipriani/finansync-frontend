@@ -217,6 +217,8 @@
 .category-color-cell {
   text-align: center;
   font-weight: 700;
+  padding: 0;
+  min-width: 120px;
 }
 
 tbody tr:hover td.transaction-category-cell {
