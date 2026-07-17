@@ -1042,11 +1042,9 @@ function App() {
       {
         key: 'color',
         label: 'Cor',
-        render: (row) => (
-          <span className="color-swatch" title="Cor cadastrada" aria-label="Cor cadastrada">
-            <span className="color-swatch__chip" style={{ backgroundColor: row.color }} aria-hidden="true" />
-          </span>
-        )
+        className: 'category-color-cell',
+        style: (row) => buildTransactionDescriptionStyle(row.color),
+        render: (row) => row.color
       },
       { key: 'active', label: 'Ativa', render: (row) => (row.active ? 'Sim' : 'Não') },
       {
