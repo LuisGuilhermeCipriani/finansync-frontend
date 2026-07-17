@@ -1099,14 +1099,39 @@ function App() {
     {
       key: 'description',
       label: 'Descrição',
-      className: 'transaction-description-cell',
+      render: (row) => row.description
+    },
+    {
+      key: 'type',
+      label: 'Tipo',
+      render: (row) => formatarTipoMovimento(row.type)
+    },
+    {
+      key: 'accountId',
+      label: 'Conta',
+      render: (row) => accounts.find((item) => String(item.id) === String(row.accountId))?.name || `Conta ${row.accountId}`
+    },
+    {
+      key: 'categoryId',
+      label: 'Categoria',
+      className: 'transaction-category-cell',
       style: (row) => {
         const category = categories.find((item) => String(item.id) === String(row.categoryId));
         return buildTransactionDescriptionStyle(category?.color);
       },
-      render: (row) => row.description
+      render: (row) =>
+        categories.find((item) => String(item.id) === String(row.categoryId))?.name || `Categoria ${row.categoryId}`
     },
-    ...columns.transactions.slice(1)
+    {
+      key: 'amount',
+      label: 'Valor',
+      render: (row) => Number(row.amount || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
+    },
+    {
+      key: 'status',
+      label: 'Status',
+      render: (row) => formatarStatus(row.status)
+    }
   ];
 
   const transactionAccountOptions = accounts.map((account) => ({
