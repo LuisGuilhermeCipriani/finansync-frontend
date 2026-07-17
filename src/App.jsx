@@ -355,6 +355,12 @@ function App() {
     document.body.scrollTop = 0;
   }, [activeTab, authView, sessionMode, authStatus]);
 
+  React.useEffect(() => {
+    if (authView !== 'login') {
+      setAuthNotice('');
+    }
+  }, [authView]);
+
   const loadDemoData = React.useCallback(() => {
     const nextAccounts = mockAccounts.map(normalizarConta);
     const nextCategories = mockCategories.map(normalizarCategoria);
