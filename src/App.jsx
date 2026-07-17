@@ -361,6 +361,15 @@ function App() {
     }
   }, [authView]);
 
+  React.useEffect(() => {
+    if (activeTab !== 'lancamentos' || sessionMode !== 'auth' || authStatus !== 'authenticated') {
+      return undefined;
+    }
+
+    void loadRemoteData();
+    return undefined;
+  }, [activeTab, authStatus, loadRemoteData, sessionMode]);
+
   const loadDemoData = React.useCallback(() => {
     const nextAccounts = mockAccounts.map(normalizarConta);
     const nextCategories = mockCategories.map(normalizarCategoria);
@@ -1191,7 +1200,7 @@ function App() {
         title="Nova conta"
         description="Cadastre contas correntes, poupança ou caixa"
         fields={[
-          { name: 'accountName', label: 'Nome da conta', placeholder: 'Conta principal' },
+          { name: 'accountName', label: 'Nome da conta', placeholder: 'Ex.: Conta X' },
           {
             name: 'accountType',
             label: 'Tipo',
@@ -1217,7 +1226,7 @@ function App() {
           title={categoryEditingId ? 'Editar categoria' : 'Nova categoria'}
           description={categoryEditingId ? 'Os campos abaixo mostram a categoria selecionada para edição' : 'Organize receitas e despesas com cores desejadas'}
           fields={[
-            { name: 'categoryName', label: 'Nome da categoria', placeholder: 'Aluguel' },
+            { name: 'categoryName', label: 'Nome da categoria', placeholder: 'Ex.: Viagem' },
             {
               name: 'categoryType',
               label: 'Tipo',
@@ -1246,7 +1255,7 @@ function App() {
         title="Novo lançamento"
         description="Controle o fluxo de caixa em uma tela única"
         fields={[
-          { name: 'transactionDescription', label: 'Descrição', placeholder: 'Serviços prestados' },
+          { name: 'transactionDescription', label: 'Descrição', placeholder: 'Ex.: Hospedagem' },
           { name: 'transactionAmount', label: 'Valor', type: 'currency', placeholder: 'R$ 0,00' },
           {
             name: 'transactionType',
@@ -1261,14 +1270,18 @@ function App() {
             name: 'transactionAccountId',
             label: 'Conta',
             type: 'select',
-            placeholder: 'Selecione uma conta',
+            placeholder:
+              transactionAccountOptions.length > 0 ? 'Ex.: Selecione uma conta' : 'Ex.: Não há contas cadastradas.',
             options: transactionAccountOptions
           },
           {
             name: 'transactionCategoryId',
             label: 'Categoria',
             type: 'select',
-            placeholder: 'Selecione uma categoria',
+            placeholder:
+              transactionCategoryOptions.length > 0
+                ? 'Ex.: Selecione uma categoria'
+                : 'Ex.: Não há categorias registradas.',
             options: transactionCategoryOptions
           }
         ]}
