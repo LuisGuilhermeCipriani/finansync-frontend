@@ -690,19 +690,16 @@ function App() {
   }, []);
 
   React.useEffect(() => {
-    if (accounts.length === 0) {
-      return;
-    }
-
     setForm((current) => {
       const selectedAccount = findSelectedOption(accounts, current.transactionAccountId);
-      if (selectedAccount) {
+
+      if (selectedAccount || current.transactionAccountId === '') {
         return current;
       }
 
       return {
         ...current,
-        transactionAccountId: buildSelectionValue(accounts[0].id, accounts[0].name)
+        transactionAccountId: ''
       };
     });
   }, [accounts]);
