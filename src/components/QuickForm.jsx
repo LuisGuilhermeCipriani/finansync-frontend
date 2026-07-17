@@ -12,6 +12,7 @@ function formatarMoeda(value) {
 export default function QuickForm({ title, description, fields, values, onChange, onSubmit, submitLabel }) {
   const [focusedCurrencyField, setFocusedCurrencyField] = React.useState('');
   const [focusedSelectField, setFocusedSelectField] = React.useState('');
+  const [openEmptySelectField, setOpenEmptySelectField] = React.useState('');
 
   return (
     <form className="quick-form" onSubmit={onSubmit}>
@@ -24,7 +25,24 @@ export default function QuickForm({ title, description, fields, values, onChange
           <label key={field.name}>
             <span>{field.label}</span>
             {field.type === 'select' ? (
-              <div className="quick-form__select-shell">
+              field.name === 'transactionAccountId' && (field.options || []).length === 0 ? (
+                <div className="quick-form__select-shell">
+                  <button
+                    type="button"
+                    className="quick-form__select-faux"
+                    onClick={() =>
+                      setOpenEmptySelectField((current) => (current === field.name ? '' : field.name))
+                    }
+                  >
+                    <span>{field.placeholder || 'Selecione uma conta'}</span>
+                  </button>
+                  {openEmptySelectField === field.name ? (
+                    <div className="quick-form__select-empty" role="status" aria-live="polite">
+                      Não há contas registradas
+                    </div>
+                  ) : null}
+                </div>
+              ) : (
                 <select
                   name={field.name}
                   value={values[field.name]}
@@ -48,14 +66,7 @@ export default function QuickForm({ title, description, fields, values, onChange
                     );
                   })}
                 </select>
-                {field.name === 'transactionAccountId' &&
-                focusedSelectField === field.name &&
-                (field.options || []).length === 0 ? (
-                  <div className="quick-form__select-empty" role="status" aria-live="polite">
-                    Não há contas registradas
-                  </div>
-                ) : null}
-              </div>
+              )
             ) : field.type === 'currency' ? (
               <input
                 type="text"
