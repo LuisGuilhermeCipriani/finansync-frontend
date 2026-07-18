@@ -1,0 +1,61 @@
+<svg width="1280" height="720" viewBox="0 0 1280 720" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1280" y2="720" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#081222"/>
+      <stop offset="1" stop-color="#0B1830"/>
+    </linearGradient>
+    <linearGradient id="sidebar" x1="0" y1="0" x2="280" y2="720" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#081120"/>
+      <stop offset="1" stop-color="#0B1727"/>
+    </linearGradient>
+    <linearGradient id="card" x1="320" y1="132" x2="1190" y2="650" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#121C37"/>
+      <stop offset="1" stop-color="#0F1730"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#38BDF8"/>
+      <stop offset="1" stop-color="#1D93E5"/>
+    </linearGradient>
+  </defs>
+  <rect width="1280" height="720" fill="url(#bg)"/>
+  <rect width="280" height="720" fill="url(#sidebar)"/>
+  <circle cx="1160" cy="120" r="160" fill="#1D93E5" fill-opacity="0.10"/>
+  <circle cx="220" cy="620" r="220" fill="#38BDF8" fill-opacity="0.06"/>
+  <rect x="340" y="48" width="908" height="148" rx="26" fill="url(#card)" stroke="#263654" stroke-width="2"/>
+  <rect x="366" y="82" width="122" height="18" rx="9" fill="#1D93E5"/>
+  <text x="366" y="138" fill="#F8FAFC" font-family="Inter, Arial, sans-serif" font-size="40" font-weight="700">Painel executivo</text>
+  <text x="366" y="170" fill="#94A3B8" font-family="Inter, Arial, sans-serif" font-size="18">Resumo das movimentacoes, saldo e contas em um unico lugar</text>
+  <rect x="1108" y="70" width="106" height="58" rx="18" fill="#0F1930" stroke="#263654" stroke-width="2"/>
+  <text x="1161" y="106" text-anchor="middle" fill="#E2E8F0" font-family="Inter, Arial, sans-serif" font-size="16" font-weight="600">Voltar</text>
+  <rect x="340" y="230" width="250" height="120" rx="22" fill="#101A34" stroke="#263654" stroke-width="2"/>
+  <rect x="616" y="230" width="250" height="120" rx="22" fill="#101A34" stroke="#263654" stroke-width="2"/>
+  <rect x="892" y="230" width="250" height="120" rx="22" fill="#101A34" stroke="#263654" stroke-width="2"/>
+  <rect x="1168" y="230" width="80" height="120" rx="22" fill="#101A34" stroke="#263654" stroke-width="2"/>
+  <text x="366" y="266" fill="#94A3B8" font-family="Inter, Arial, sans-serif" font-size="16">Saldo atual</text>
+  <text x="366" y="310" fill="#FFFFFF" font-family="Inter, Arial, sans-serif" font-size="30" font-weight="700">R$ 18.420,00</text>
+  <text x="642" y="266" fill="#94A3B8" font-family="Inter, Arial, sans-serif" font-size="16">Receitas</text>
+  <text x="642" y="310" fill="#FFFFFF" font-family="Inter, Arial, sans-serif" font-size="30" font-weight="700">R$ 24.800,00</text>
+  <text x="918" y="266" fill="#94A3B8" font-family="Inter, Arial, sans-serif" font-size="16">Despesas</text>
+  <text x="918" y="310" fill="#FFFFFF" font-family="Inter, Arial, sans-serif" font-size="30" font-weight="700">R$ 6.380,00</text>
+  <text x="1198" y="272" fill="#94A3B8" font-family="Inter, Arial, sans-serif" font-size="14">Lan.</text>
+  <text x="1198" y="310" fill="#FFFFFF" font-family="Inter, Arial, sans-serif" font-size="28" font-weight="700" text-anchor="middle">42</text>
+  <rect x="340" y="382" width="540" height="282" rx="24" fill="#101A34" stroke="#263654" stroke-width="2"/>
+  <rect x="916" y="382" width="332" height="282" rx="24" fill="#101A34" stroke="#263654" stroke-width="2"/>
+  <text x="368" y="426" fill="#F8FAFC" font-family="Inter, Arial, sans-serif" font-size="24" font-weight="700">Lancamentos recentes</text>
+  <rect x="368" y="450" width="480" height="34" rx="14" fill="#1A2746"/>
+  <rect x="368" y="494" width="480" height="34" rx="14" fill="#12213E"/>
+  <rect x="368" y="538" width="480" height="34" rx="14" fill="#1A2746"/>
+  <rect x="368" y="582" width="480" height="34" rx="14" fill="#12213E"/>
+  <rect x="368" y="626" width="480" height="34" rx="14" fill="#1A2746"/>
+  <text x="386" y="473" fill="#D8E6FF" font-family="Inter, Arial, sans-serif" font-size="14">Hospedagem</text>
+  <text x="386" y="517" fill="#D8E6FF" font-family="Inter, Arial, sans-serif" font-size="14">Salario</text>
+  <text x="386" y="561" fill="#D8E6FF" font-family="Inter, Arial, sans-serif" font-size="14">Combustivel</text>
+  <text x="386" y="605" fill="#D8E6FF" font-family="Inter, Arial, sans-serif" font-size="14">Freelance</text>
+  <text x="386" y="649" fill="#D8E6FF" font-family="Inter, Arial, sans-serif" font-size="14">Mercado</text>
+  <rect x="940" y="422" width="248" height="62" rx="18" fill="url(#accent)"/>
+  <text x="1064" y="462" text-anchor="middle" fill="#FFFFFF" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="700">Categorias</text>
+  <rect x="940" y="504" width="248" height="62" rx="18" fill="#132341" stroke="#2A3B59" stroke-width="2"/>
+  <text x="1064" y="544" text-anchor="middle" fill="#D7E7FF" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="700">Contas</text>
+  <rect x="940" y="586" width="248" height="62" rx="18" fill="#132341" stroke="#2A3B59" stroke-width="2"/>
+  <text x="1064" y="626" text-anchor="middle" fill="#D7E7FF" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="700">Relatorios</text>
+</svg>
