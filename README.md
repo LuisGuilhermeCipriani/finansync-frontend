@@ -1,5 +1,10 @@
 # Finansync Frontend
 
+[![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=white)](https://react.dev/)
+[![Vite](https://img.shields.io/badge/Vite-8-646CFF?logo=vite&logoColor=white)](https://vite.dev/)
+[![JavaScript](https://img.shields.io/badge/JavaScript-ES2023-F7DF1E?logo=javascript&logoColor=111827)](https://developer.mozilla.org/docs/Web/JavaScript)
+[![MIT License](https://img.shields.io/badge/License-MIT-0ea5e9)](#licen%C3%A7a)
+
 Interface web em React para o sistema financeiro Finansync. Este frontend foi pensado para oferecer uma experiência
 clara, responsiva e elegante para autenticação, acompanhamento do painel, cadastro de contas, organização de categorias
 e registro de lançamentos.
@@ -13,6 +18,14 @@ e registro de lançamentos.
 - Tabelas com realce visual por categoria
 - Campos e listas adaptados ao fluxo financeiro real
 - Persistência da aba ativa ao atualizar a página
+
+## Destaques
+
+- Experiência visual consistente entre login, painel e áreas operacionais
+- Formulários com validação e comportamento adaptado ao contexto financeiro
+- Tabelas com destaque por categoria e interação por hover
+- Galeria de telas reais para apresentação no GitHub
+- Integração opcional com a API do backend
 
 ## Galeria
 
@@ -225,4 +238,3 @@ VITE_API_URL=http://localhost:3333/api/v1
 ## Licença
 
 Projeto distribuído sob licença MIT.
-
