@@ -1,33 +1,61 @@
 # Finansync Frontend
 
-Interface web em React para o sistema financeiro Finansync. Este frontend entrega uma experiência
-visual moderna para acompanhar o painel, gerenciar contas, organizar categorias e registrar lançamentos,
-com suporte a modo demonstração e integração com a API do backend.
+Interface web em React para o sistema financeiro Finansync. Este frontend foi pensado para oferecer uma experiência
+clara, responsiva e elegante para autenticação, acompanhamento do painel, cadastro de contas, organização de categorias
+e registro de lançamentos.
 
-## Visão Geral
+## Visão geral
 
 - SPA construída com React e Vite
-- Interface responsiva com tema escuro e identidade visual consistente
 - Modo demonstração quando a API não está disponível
-- Fluxo autenticado quando conectado ao backend
-- Telas dedicadas para painel, contas, categorias e lançamentos
-- Exibição de cores e estados visuais nas tabelas e formulários
+- Integração com a API do backend quando `VITE_API_URL` está configurado
+- Interface com tema escuro, foco em contraste e leitura confortável
+- Tabelas com realce visual por categoria
+- Campos e listas adaptados ao fluxo financeiro real
+- Persistência da aba ativa ao atualizar a página
 
 ## Galeria
 
-As imagens abaixo ilustram a experiência visual do sistema.
+As capturas abaixo mostram as principais telas da aplicação.
 
-### Login
-
-![Tela de login do Finansync](docs/images/login-screen.svg)
-
-### Painel
-
-![Tela do painel executivo do Finansync](docs/images/dashboard-screen.svg)
-
-### Lançamentos
-
-![Tela de lançamentos do Finansync](docs/images/launches-screen.svg)
+<table>
+  <tr>
+    <td align="center">
+      <img src="docs/images/login.png" alt="Tela de login do Finansync" width="100%" />
+      <br />
+      <strong>Login</strong>
+    </td>
+    <td align="center">
+      <img src="docs/images/register.png" alt="Tela de cadastro do Finansync" width="100%" />
+      <br />
+      <strong>Cadastro</strong>
+    </td>
+  </tr>
+  <tr>
+    <td align="center">
+      <img src="docs/images/dashboard.png" alt="Tela do painel do Finansync" width="100%" />
+      <br />
+      <strong>Painel</strong>
+    </td>
+    <td align="center">
+      <img src="docs/images/accounts.png" alt="Tela de contas do Finansync" width="100%" />
+      <br />
+      <strong>Contas</strong>
+    </td>
+  </tr>
+  <tr>
+    <td align="center">
+      <img src="docs/images/categories.png" alt="Tela de categorias do Finansync" width="100%" />
+      <br />
+      <strong>Categorias</strong>
+    </td>
+    <td align="center">
+      <img src="docs/images/launches.png" alt="Tela de lançamentos do Finansync" width="100%" />
+      <br />
+      <strong>Lançamentos</strong>
+    </td>
+  </tr>
+</table>
 
 ## Tecnologias
 
@@ -38,31 +66,31 @@ As imagens abaixo ilustram a experiência visual do sistema.
 ## Estrutura do projeto
 
 - `src/App.jsx`: composição principal da aplicação
-- `src/components`: componentes reutilizáveis
+- `src/components`: componentes reutilizáveis da interface
 - `src/services`: integração com a API e dados de apoio
-- `src/styles`: estilos globais e específicos do layout
-- `public`: arquivos estáticos públicos
-- `docs/images`: imagens usadas nesta documentação
+- `src/styles`: estilos globais da aplicação
+- `public`: arquivos estáticos
+- `docs/images`: imagens utilizadas na documentação
 
 ## Requisitos
 
 - Node.js 18 ou superior
 - npm
-- Backend do Finansync em execução, caso queira consumir a API real
+- Backend do Finansync em execução, caso deseje usar dados reais
 
 ## Como executar
 
-### 1. Instalar dependências
+### 1. Instale as dependências
 
 ```bash
 npm install
 ```
 
-### 2. Configurar ambiente
+### 2. Configure o ambiente
 
-Copie `.env.example` para `.env` e ajuste conforme o seu cenário.
+Copie `.env.example` para `.env` e ajuste os valores conforme o seu cenário.
 
-### 3. Iniciar o projeto
+### 3. Inicie a aplicação
 
 Modo desenvolvimento:
 
@@ -87,7 +115,7 @@ npm run preview
 | Variável | Descrição |
 | --- | --- |
 | `VITE_API_URL` | URL base da API do Finansync |
-| `FRONTEND_PORT` | Porta usada pelo servidor de desenvolvimento |
+| `FRONTEND_PORT` | Porta do servidor de desenvolvimento do Vite |
 
 ### Exemplo
 
@@ -96,95 +124,103 @@ VITE_API_URL=http://localhost:3333/api/v1
 FRONTEND_PORT=3000
 ```
 
-## Integração com o backend
+## Modos de operação
 
-Quando `VITE_API_URL` está definido, o frontend passa a operar em modo autenticado e busca os
-dados diretamente da API.
+### Modo demonstração
 
-Quando a API não está disponível, a aplicação entra em modo demonstração para permitir navegação
-e validação visual da interface.
+Quando a API não está disponível, o frontend carrega dados simulados para permitir navegação e validação visual.
 
-## Funcionalidades principais
+### Modo autenticado
+
+Quando `VITE_API_URL` está configurado, a aplicação autentica o usuário e passa a consumir a API real do backend.
+
+## Funcionalidades
 
 ### Autenticação
 
 - Login
-- Cadastro de usuário
-- Recuperação de sessão
+- Cadastro de conta
 - Logout seguro
-- Atualização de perfil do usuário
+- Recuperação de sessão
+- Atualização de perfil
 
 ### Painel
 
-- Indicadores de saldo, receitas, despesas e quantidade de lançamentos
-- Resumo com lançamentos recentes
-- Destaque de contas importantes
+- Saldo atual
+- Receitas e despesas
+- Quantidade de lançamentos
+- Lançamentos recentes
+- Contas em destaque
 
 ### Contas
 
-- Cadastro de contas
+- Cadastro de contas correntes, poupança e caixa
 - Edição e exclusão
-- Visualização em tabela
+- Listagem em tabela
 
 ### Categorias
 
 - Cadastro de categorias com cor personalizada
 - Edição e exclusão
-- Exibição da cor nas listagens
+- Cores destacadas nas listagens
 
 ### Lançamentos
 
-- Criação e manutenção de lançamentos
-- Seleção dependente entre tipo, conta e categoria
-- Cores por categoria nas tabelas
-- Persistência da aba ativa ao atualizar a página
+- Cadastro e edição de lançamentos
+- Seleção dependente de tipo, conta e categoria
+- Cores da categoria na tabela
+- Destaque visual ao passar o mouse
 
-## Scripts disponíveis
+## Comportamentos importantes
+
+- O campo `Categoria` em lançamentos só mostra categorias compatíveis com o tipo escolhido
+- Os campos `Conta` e `Categoria` exibem mensagens claras quando não existem registros
+- A aba ativa permanece salva ao recarregar a página
+- O painel exibe o mesmo padrão visual de destaque das demais telas
+
+## Layout e UX
+
+O projeto foi desenhado para evitar uma interface genérica e sem identidade.
+
+- Sidebar escura com navegação fixa
+- Cabeçalhos fortes e hierarquia visual clara
+- Cartões com profundidade sutil
+- Botões com contraste elevado
+- Tabelas legíveis e bem espaçadas
+- Realce de linhas e colunas ao interagir com os dados
+
+## Organização dos componentes
+
+- `AuthCard`: login e cadastro
+- `Sidebar`: navegação lateral
+- `Topbar`: cabeçalho principal com ações do usuário
+- `MetricCard`: cards de indicadores
+- `SectionCard`: blocos de conteúdo
+- `DataTable`: tabelas reutilizáveis
+- `QuickForm`: formulários das telas principais
+
+## Integração com o backend
+
+O frontend foi projetado para trabalhar com a API do Finansync sem alterar a camada de consumo.
+
+Em desenvolvimento, um valor comum para a API é:
+
+```env
+VITE_API_URL=http://localhost:3333/api/v1
+```
+
+## Scripts
 
 - `npm run dev`: inicia o ambiente de desenvolvimento
 - `npm run build`: gera a versão de produção
 - `npm run preview`: visualiza o build localmente
 
-## Comportamentos importantes
-
-- O campo `Categoria` em lançamentos só mostra categorias compatíveis com o tipo escolhido
-- O campo `Conta` e `Categoria` exibem mensagens claras quando não há registros
-- As tabelas usam realce visual em linhas e categorias para facilitar leitura
-- A aba atual permanece salva ao recarregar a página
-
-## Layout
-
-O projeto foi pensado para manter uma identidade visual consistente:
-
-- sidebar escura com navegação fixa
-- cartões com bordas suaves e profundidade sutil
-- botões e chips com azul claro de destaque
-- tabelas legíveis com cabeçalhos destacados
-- foco em contraste e hierarquia visual
-
-## Organização dos componentes
-
-- `AuthCard`: login, cadastro e mensagens de sessão
-- `Sidebar`: navegação lateral
-- `Topbar`: cabeçalho da área principal
-- `MetricCard`: cards de indicadores
-- `SectionCard`: blocos de conteúdo
-- `DataTable`: tabelas reutilizáveis
-- `QuickForm`: formulários rápidos das telas
-
-## Banco de dados e ambiente
-
-Este frontend pode operar com:
-
-- API real apontada por `VITE_API_URL`
-- dados de demonstração embutidos no projeto
-
 ## Contribuição
 
-1. Crie uma branch para sua alteração
-2. Faça os ajustes no código
+1. Crie uma branch para a alteração
+2. Faça os ajustes necessários
 3. Execute `npm run build`
-4. Abra um pull request com uma descrição clara
+4. Abra um pull request com a descrição da mudança
 
 ## Licença
 
