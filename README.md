@@ -10,6 +10,49 @@ Interface web em React para o sistema financeiro Finansync.
 - Modo demonstração quando a API não está disponível
 - Layout responsivo para login, dashboard, contas, categorias e lançamentos
 
+## Galeria
+
+As imagens abaixo mostram algumas telas da interface do Finansync.
+
+<table>
+  <tr>
+    <td align="center">
+      <img src="docs/images/login.png" alt="Tela de login do Finansync" width="100%" />
+      <br />
+      <strong>Login</strong>
+    </td>
+    <td align="center">
+      <img src="docs/images/register.png" alt="Tela de cadastro do Finansync" width="100%" />
+      <br />
+      <strong>Cadastro</strong>
+    </td>
+  </tr>
+  <tr>
+    <td align="center">
+      <img src="docs/images/dashboard.png" alt="Tela do painel do Finansync" width="100%" />
+      <br />
+      <strong>Painel</strong>
+    </td>
+    <td align="center">
+      <img src="docs/images/accounts.png" alt="Tela de contas do Finansync" width="100%" />
+      <br />
+      <strong>Contas</strong>
+    </td>
+  </tr>
+  <tr>
+    <td align="center">
+      <img src="docs/images/categories.png" alt="Tela de categorias do Finansync" width="100%" />
+      <br />
+      <strong>Categorias</strong>
+    </td>
+    <td align="center">
+      <img src="docs/images/launches.png" alt="Tela de lançamentos do Finansync" width="100%" />
+      <br />
+      <strong>Lançamentos</strong>
+    </td>
+  </tr>
+</table>
+
 ## Estrutura
 
 - `src/App.jsx`: composição principal
@@ -48,35 +91,24 @@ npm run preview
 
 O repositório inclui suporte a desenvolvimento com Docker e uma imagem de produção com Nginx.
 
-### Desenvolvimento
+## Ambientes
 
-```bash
-docker compose up --build
-```
+### Local, sem Docker
 
-URLs padrão:
+- `npm run dev` para desenvolvimento
+- `npm run build` para gerar o pacote de produção
+- `npm run preview` para revisar o build
 
-- Frontend: `http://localhost:3000`
-- Backend: `http://localhost:3333`
+### Desenvolvimento com Docker
 
-O container do frontend usa hot reload e publica a API em `VITE_API_URL=http://localhost:3333/api/v1`, porque o acesso final acontece pelo navegador no host.
-
-Comandos úteis na raiz do projeto:
-
-```bash
-docker compose logs -f
-docker compose down
-```
-
-### Encerramento
-
-```bash
-docker compose down
-```
+- `docker compose up --build` para subir frontend e backend
+- `docker compose logs -f` para acompanhar a aplicação
+- `docker compose down` para encerrar a stack
 
 ### Produção
 
-O `Dockerfile` possui um estágio `prod` que gera os arquivos estáticos com Vite e serve tudo com Nginx não privilegiado na porta `8080` do container.
+- O estágio `prod` do Dockerfile gera os arquivos estáticos com Vite
+- O Nginx não privilegiado serve o build na porta `8080` do container
 
 ### Observação sobre a API
 
@@ -127,6 +159,13 @@ ORACLE_SERVICE_NAME=XEPDB1
 
 O frontend consome a API por `VITE_API_URL` e não altera os contratos existentes.
 Quando o backend estiver em Oracle no ambiente Docker, o frontend continua apontando para a mesma URL pública publicada no host.
+
+## Troubleshooting
+
+- Se a interface não carregar, confirme se o frontend está em `http://localhost:3000`
+- Se a API não responder, verifique se o backend está em `http://localhost:3333/api/v1/health`
+- Se mudar a porta do backend, atualize `VITE_API_URL` no `.env` e recrie a stack
+- Se o cache do navegador atrapalhar, faça um reload forçado após recriar os containers
 
 ## Scripts
 
