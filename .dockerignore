@@ -1,0 +1,15 @@
+node_modules
+node_modules/.vite
+dist
+.git
+.env
+.env.*
+.DS_Store
+.agents
+.vscode
+coverage
+logs
+npm-debug.log*
+*.log
+README.md
+docker-compose.yml

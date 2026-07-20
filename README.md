@@ -1,113 +1,34 @@
 # Finansync Frontend
 
-[![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=white)](https://react.dev/)
-[![Vite](https://img.shields.io/badge/Vite-8-646CFF?logo=vite&logoColor=white)](https://vite.dev/)
-[![JavaScript](https://img.shields.io/badge/JavaScript-ES2023-F7DF1E?logo=javascript&logoColor=111827)](https://developer.mozilla.org/docs/Web/JavaScript)
-[![MIT License](https://img.shields.io/badge/License-MIT-0ea5e9)](#licen%C3%A7a)
-
-Interface web em React para o sistema financeiro Finansync. Este frontend foi pensado para oferecer uma experiência
-clara, responsiva e elegante para autenticação, acompanhamento do painel, cadastro de contas, organização de categorias
-e registro de lançamentos.
+Interface web em React para o sistema financeiro Finansync.
 
 ## Visão geral
 
-- SPA construída com React e Vite
-- Modo demonstração quando a API não está disponível
-- Integração com a API do backend quando `VITE_API_URL` está configurado
-- Interface com tema escuro, foco em contraste e leitura confortável
-- Tabelas com realce visual por categoria
-- Campos e listas adaptados ao fluxo financeiro real
-- Persistência da aba ativa ao atualizar a página
-
-## Destaques
-
-- Experiência visual consistente entre login, painel e áreas operacionais
-- Formulários com validação e comportamento adaptado ao contexto financeiro
-- Tabelas com destaque por categoria e interação por hover
-- Galeria de telas reais para apresentação no GitHub
-- Integração opcional com a API do backend
-
-## Galeria
-
-As capturas abaixo mostram as principais telas da aplicação.
-
-<table>
-  <tr>
-    <td align="center">
-      <img src="docs/images/login.png" alt="Tela de login do Finansync" width="100%" />
-      <br />
-      <strong>Login</strong>
-    </td>
-    <td align="center">
-      <img src="docs/images/register.png" alt="Tela de cadastro do Finansync" width="100%" />
-      <br />
-      <strong>Cadastro</strong>
-    </td>
-  </tr>
-  <tr>
-    <td align="center">
-      <img src="docs/images/dashboard.png" alt="Tela do painel do Finansync" width="100%" />
-      <br />
-      <strong>Painel</strong>
-    </td>
-    <td align="center">
-      <img src="docs/images/accounts.png" alt="Tela de contas do Finansync" width="100%" />
-      <br />
-      <strong>Contas</strong>
-    </td>
-  </tr>
-  <tr>
-    <td align="center">
-      <img src="docs/images/categories.png" alt="Tela de categorias do Finansync" width="100%" />
-      <br />
-      <strong>Categorias</strong>
-    </td>
-    <td align="center">
-      <img src="docs/images/launches.png" alt="Tela de lançamentos do Finansync" width="100%" />
-      <br />
-      <strong>Lançamentos</strong>
-    </td>
-  </tr>
-</table>
-
-## Tecnologias
-
-- React 18
-- Vite
+- React 18 com Vite
 - JavaScript
+- Integração com a API do backend via `VITE_API_URL`
+- Modo demonstração quando a API não está disponível
+- Layout responsivo para login, dashboard, contas, categorias e lançamentos
 
-## Estrutura do projeto
+## Estrutura
 
-- `src/App.jsx`: composição principal da aplicação
-- `src/components`: componentes reutilizáveis da interface
-- `src/services`: integração com a API e dados de apoio
-- `src/styles`: estilos globais da aplicação
+- `src/App.jsx`: composição principal
+- `src/components`: componentes reutilizáveis
+- `src/services`: cliente da API e dados de apoio
+- `src/styles`: estilos globais
 - `public`: arquivos estáticos
-- `docs/images`: imagens utilizadas na documentação
+- `docs/images`: capturas da interface
 
 ## Requisitos
 
-- Node.js 18 ou superior
+- Node.js 22 ou superior
 - npm
-- Backend do Finansync em execução, caso deseje usar dados reais
+- Backend do Finansync em execução para consumo da API real
 
-## Como executar
-
-### 1. Instale as dependências
+## Execução local
 
 ```bash
 npm install
-```
-
-### 2. Configure o ambiente
-
-Copie `.env.example` para `.env` e ajuste os valores conforme o seu cenário.
-
-### 3. Inicie a aplicação
-
-Modo desenvolvimento:
-
-```bash
 npm run dev
 ```
 
@@ -117,124 +38,98 @@ Build de produção:
 npm run build
 ```
 
-Preview do build:
+Pré-visualização do build:
 
 ```bash
 npm run preview
 ```
 
+## Docker
+
+O repositório inclui suporte a desenvolvimento com Docker e uma imagem de produção com Nginx.
+
+### Desenvolvimento
+
+```bash
+docker compose up --build
+```
+
+URLs padrão:
+
+- Frontend: `http://localhost:3000`
+- Backend: `http://localhost:3333`
+
+O container do frontend usa hot reload e publica a API em `VITE_API_URL=http://localhost:3333/api/v1`, porque o acesso final acontece pelo navegador no host.
+
+Comandos úteis na raiz do projeto:
+
+```bash
+docker compose logs -f
+docker compose down
+```
+
+### Encerramento
+
+```bash
+docker compose down
+```
+
+### Produção
+
+O `Dockerfile` possui um estágio `prod` que gera os arquivos estáticos com Vite e serve tudo com Nginx não privilegiado na porta `8080` do container.
+
+### Observação sobre a API
+
+No navegador, o frontend precisa apontar para a porta publicada do backend no host.
+Por isso, `VITE_API_URL` continua usando `http://localhost:3333/api/v1` mesmo quando os containers se comunicam por rede interna.
+
+Se você alterar a porta do backend, atualize `VITE_API_URL` e recrie o ambiente com `docker compose up --build`.
+
 ## Variáveis de ambiente
 
 | Variável | Descrição |
 | --- | --- |
-| `VITE_API_URL` | URL base da API do Finansync |
+| `VITE_API_URL` | URL base da API consumida pelo navegador |
 | `FRONTEND_PORT` | Porta do servidor de desenvolvimento do Vite |
+| `BACKEND_PORT` | Porta publicada do backend no host |
+| `DB_CLIENT` | Cliente do backend: `memory` ou `oracle` |
+| `CORS_ORIGIN` | Origem permitida pelo backend |
+| `AUTH_TOKEN_TTL` | Tempo de expiração do token JWT |
+| `JWT_SECRET` | Segredo do token JWT |
+| `ORACLE_USER` | Usuário do Oracle |
+| `ORACLE_PASSWORD` | Senha do Oracle |
+| `ORACLE_HOST` | Host do Oracle no Docker ou na máquina local |
+| `ORACLE_PORT` | Porta do listener do Oracle |
+| `ORACLE_SERVICE_NAME` | Service name do banco Oracle |
+| `ORACLE_CONNECTION_STRING` | Alternativa opcional para conexão direta |
 
-### Exemplo
+## Exemplo de `.env`
 
 ```env
 VITE_API_URL=http://localhost:3333/api/v1
 FRONTEND_PORT=3000
+BACKEND_PORT=3333
+NODE_ENV=development
+HOST=0.0.0.0
+PORT=3333
+DB_CLIENT=memory
+CORS_ORIGIN=http://localhost:3000
+AUTH_TOKEN_TTL=7d
+JWT_SECRET=troque-esta-chave
+ORACLE_USER=finansync
+ORACLE_PASSWORD=finansync
+ORACLE_HOST=host.docker.internal
+ORACLE_PORT=1521
+ORACLE_SERVICE_NAME=XEPDB1
 ```
-
-## Modos de operação
-
-### Modo demonstração
-
-Quando a API não está disponível, o frontend carrega dados simulados para permitir navegação e validação visual.
-
-### Modo autenticado
-
-Quando `VITE_API_URL` está configurado, a aplicação autentica o usuário e passa a consumir a API real do backend.
-
-## Funcionalidades
-
-### Autenticação
-
-- Login
-- Cadastro de conta
-- Logout seguro
-- Recuperação de sessão
-- Atualização de perfil
-
-### Painel
-
-- Saldo atual
-- Receitas e despesas
-- Quantidade de lançamentos
-- Lançamentos recentes
-- Contas em destaque
-
-### Contas
-
-- Cadastro de contas correntes, poupança e caixa
-- Edição e exclusão
-- Listagem em tabela
-
-### Categorias
-
-- Cadastro de categorias com cor personalizada
-- Edição e exclusão
-- Cores destacadas nas listagens
-
-### Lançamentos
-
-- Cadastro e edição de lançamentos
-- Seleção dependente de tipo, conta e categoria
-- Cores da categoria na tabela
-- Destaque visual ao passar o mouse
-
-## Comportamentos importantes
-
-- O campo `Categoria` em lançamentos só mostra categorias compatíveis com o tipo escolhido
-- Os campos `Conta` e `Categoria` exibem mensagens claras quando não existem registros
-- A aba ativa permanece salva ao recarregar a página
-- O painel exibe o mesmo padrão visual de destaque das demais telas
-
-## Layout e UX
-
-O projeto foi desenhado para evitar uma interface genérica e sem identidade.
-
-- Sidebar escura com navegação fixa
-- Cabeçalhos fortes e hierarquia visual clara
-- Cartões com profundidade sutil
-- Botões com contraste elevado
-- Tabelas legíveis e bem espaçadas
-- Realce de linhas e colunas ao interagir com os dados
-
-## Organização dos componentes
-
-- `AuthCard`: login e cadastro
-- `Sidebar`: navegação lateral
-- `Topbar`: cabeçalho principal com ações do usuário
-- `MetricCard`: cards de indicadores
-- `SectionCard`: blocos de conteúdo
-- `DataTable`: tabelas reutilizáveis
-- `QuickForm`: formulários das telas principais
 
 ## Integração com o backend
 
-O frontend foi projetado para trabalhar com a API do Finansync sem alterar a camada de consumo.
-
-Em desenvolvimento, um valor comum para a API é:
-
-```env
-VITE_API_URL=http://localhost:3333/api/v1
-```
+O frontend consome a API por `VITE_API_URL` e não altera os contratos existentes.
+Quando o backend estiver em Oracle no ambiente Docker, o frontend continua apontando para a mesma URL pública publicada no host.
 
 ## Scripts
 
-- `npm run dev`: inicia o ambiente de desenvolvimento
+- `npm run dev`: inicia o frontend em modo desenvolvimento
 - `npm run build`: gera a versão de produção
 - `npm run preview`: visualiza o build localmente
-
-## Contribuição
-
-1. Crie uma branch para a alteração
-2. Faça os ajustes necessários
-3. Execute `npm run build`
-4. Abra um pull request com a descrição da mudança
-
-## Licença
-
-Projeto distribuído sob licença MIT.
